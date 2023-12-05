@@ -1,0 +1,67 @@
+type Query {
+    users: [User],
+}
+type Mutation{
+    createUser(user: UserInput):User
+}
+
+input UserInput{
+    name: String!
+    lastname: String!
+    username: String!
+    email: String!
+    password: String!
+}
+
+type Article {
+    id: ID!
+    type: String!
+    price: Int!
+    order: Order
+}
+
+type Diapers {
+    id: ID!
+    type: String!
+    price: Int!
+    order: Order
+    size: String!
+}
+
+type Inserts {
+    id: ID!
+    type: String!
+    price: Int!
+    order: Order
+}
+
+type Order {
+    id: ID!
+    date: String!
+    client: String!
+    driver: User
+    articles: [Article!]!
+}
+
+type TrashBag {
+    id: ID!
+    type: String!
+    price: Int!
+    order: Order
+}
+
+type User {
+    id: ID!
+    name: String!
+    lastname: String!
+    username: String!
+    email: String!
+    password: String!
+}
+
+type WashCloth {
+    id: ID!
+    type: String!
+    price: Int!
+    order: Order
+}
