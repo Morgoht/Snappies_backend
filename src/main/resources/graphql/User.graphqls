@@ -1,0 +1,24 @@
+type User {
+    id: ID!
+    name: String!
+    lastname: String!
+    username: String!
+    email: String!
+    password: String!
+}
+
+input UserInput{
+    name: String!
+    lastname: String!
+    username: String!
+    email: String!
+    password: String!
+}
+
+input UserEditInput {
+    id: String
+    lastname: String!
+    username: String!
+    email: String!
+    password: String!
+}
