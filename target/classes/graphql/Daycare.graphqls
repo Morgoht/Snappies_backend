@@ -1,0 +1,23 @@
+type Daycare {
+    documentId: ID!
+    name: String!
+    email: String
+    address: String!
+    phoneNumber: String
+}
+
+input DaycareInput {
+    documentId: ID!
+    name: String!
+    email: String
+    address: String
+    phoneNumber: String
+}
+
+input DaycareEditInput {
+    documentId: ID!
+    name: String!
+    email: String
+    address: String
+    phoneNumber: String
+}

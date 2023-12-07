@@ -1,0 +1,15 @@
+type Article {
+    documentId: ID!
+    articleType: ArticleType!
+}
+
+
+input ArticleInput {
+    documentId: ID!
+    articleType: ArticleTypeInput!
+}
+
+input ArticleEditInput {
+    documentId: ID!
+    articleType: ArticleTypeInput!
+}
