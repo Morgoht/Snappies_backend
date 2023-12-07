@@ -1,0 +1,44 @@
+interface Article {
+    documentId: ID!
+    type: String!
+    price: Float!
+}
+
+type Insert implements Article {
+    documentId: ID!
+    type: String!
+    price: Float!
+}
+
+type SacPoubelle implements Article {
+    documentId: ID!
+    type: String!
+    price: Float!
+}
+
+type GantDeToilette implements Article {
+    documentId: ID!
+    type: String!
+    price: Float!
+}
+
+type Lange implements Article{
+    documentId: ID!
+    type: String!
+    price: Float!
+    size: String!
+}
+
+input ArticleInput {
+    documentId: ID!
+    type: String!
+    price: Float!
+    size: String
+}
+
+input ArticleEditInput {
+    documentId: ID!
+    type: String!
+    price: Float!
+    size: String
+}

@@ -1,8 +1,23 @@
 type Query {
     userById(userId:ID):User
     allUsers:[User]
+    langeById(documentId: ID!): Lange
+    allLanges: [Lange]
+    insertsById(documentId: ID!): Insert
+    allInserts: [Insert]
+    sacPoubelleById(documentId: ID!): SacPoubelle
+    allSacPoubelle: [SacPoubelle]
+    gantDeToiletteById(documentId: ID!): GantDeToilette
+    allGantDeToilette: [GantDeToilette]
+    allArticles:[Article]
 }
-type Mutation{
-    createUser(name : String! , lastname: String!, username : String!, email: String!, password:String!):User
+type Mutation {
+    createUser(name: String!, lastname: String!, username: String!, email: String!, password: String!): User
+    updateUser(name: String!, lastname: String!, username: String!, email: String!, password: String!): User
+    deleteUser(userId: ID): String
+    createArticle(article: ArticleInput): Article
+    updateArticle(article: ArticleInput): Article
+    deleteArticle(documentId: ID!): String
+
 }
 

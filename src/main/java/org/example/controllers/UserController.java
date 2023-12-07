@@ -65,6 +65,11 @@ public class UserController {
 
     }
 
+    @MutationMapping
+    public String deleteUser(@Argument String userId){
+        return service.deleteUser(userId);
+    }
+
 
 
         @GetMapping("/test")
