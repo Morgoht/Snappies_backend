@@ -8,12 +8,13 @@ import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 @Controller
 public class ArticleController {
 
-    ArticleService service = new ArticleService();
+    private final ArticleService service;
 
     public ArticleController(ArticleService service){
         this.service = service;
@@ -31,82 +32,25 @@ public class ArticleController {
 
 
     @MutationMapping
-    public Article  createArticle(@Argument String type, @Argument double price,
-                            @Argument String size) throws ExecutionException, InterruptedException {
-             switch (type) {
-                case "Lange" ->{
-                    Lange article = new Lange();
-                article.setType(type);
-                article.setPrice(price);
-                article.setSize(size);
-                    service.createArticle(article,size);
-                    return article;
-                }
-                case "Insert" -> {
-                    Insert article = new Insert();
-                    article.setType(type);
-                    article.setPrice(price);
-                    service.createArticle(article,"");
-                    return article;
-                }
-                case "Sac poubelle" -> {
-                    SacPoubelle article = new SacPoubelle();
-                    article.setType(type);
-                    article.setPrice(price);
-                    service.createArticle(article,"");
-                    return article;
-                }
-                case "Gant de toilette" -> {
-                    GantDeToilette article = new GantDeToilette();
-                    article.setType(type);
-                    article.setPrice(price);
-                    service.createArticle(article,"");
-                    return article;
-                }
-                default -> {
-                     return null;
-                 }
-             }
+    public Article createArticle(@Argument ArticleType type) throws ExecutionException, InterruptedException {
+            Article article = new Article();
+            article.setDocumentId(UUID.randomUUID().toString());
+            article.setArticleType(type);
+            service.createArticle(article);
+            return article;
     }
 
     @MutationMapping
-    public Article  updateArticle(@Argument String type, @Argument double price,
-                                  @Argument String size) throws ExecutionException, InterruptedException {
-        switch (type) {
-            case "Lange" ->{
-                Lange article = new Lange();
-                article.setType(type);
-                article.setPrice(price);
-                article.setSize(size);
-                service.updateArticle(article,size);
-                return article;
-            }
-            case "Insert" -> {
-                Insert article = new Insert();
-                article.setType(type);
-                article.setPrice(price);
-                service.updateArticle(article,"");
-                return article;
-            }
-            case "Sac poubelle" -> {
-                SacPoubelle article = new SacPoubelle();
-                article.setType(type);
-                article.setPrice(price);
-                service.updateArticle(article,"");
-                return article;
-            }
-            case "Gant de toilette" -> {
-                GantDeToilette article = new GantDeToilette();
-                article.setType(type);
-                article.setPrice(price);
-                service.updateArticle(article,"");
-                return article;
-            }
-            default -> {
-                return null;
-            }
-        }
+    public Article updateArticle(@Argument ArticleType type,
+                                 @Argument String storageType) throws ExecutionException, InterruptedException {
+        Article article = new Article();
+        article.setDocumentId(UUID.randomUUID().toString());
+        article.setArticleType(type);
+        service.updateArticle(article);
+        return article;
     }
+
+
 
 
     @MutationMapping

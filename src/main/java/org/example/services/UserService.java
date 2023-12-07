@@ -35,6 +35,8 @@ public class UserService {
         List<User> userList = new ArrayList<>();
         for (DocumentSnapshot doc : querySnapshot.get().getDocuments()) {
             User user = doc.toObject(User.class);
+            assert user != null;
+            user.setDocumentId(doc.getId());
             userList.add(user);
         }
 
@@ -42,12 +44,12 @@ public class UserService {
     }
 
     public String createUser(User user) throws ExecutionException, InterruptedException {
-        ApiFuture<WriteResult> collectionsApiFuture = dbFirestore.collection("users").document(user.getDocument_id()).set(user);
+        ApiFuture<WriteResult> collectionsApiFuture = dbFirestore.collection("users").document(user.getDocumentId()).set(user);
         return collectionsApiFuture.get().getUpdateTime().toString();
     }
 
     public String updateUser(User user) throws ExecutionException, InterruptedException {
-        ApiFuture<WriteResult> collectionsApiFuture = dbFirestore.collection("users").document(user.getDocument_id()).set(user);
+        ApiFuture<WriteResult> collectionsApiFuture = dbFirestore.collection("users").document(user.getDocumentId()).set(user);
         return collectionsApiFuture.get().getUpdateTime().toString();
     }
 

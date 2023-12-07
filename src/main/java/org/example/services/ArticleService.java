@@ -22,75 +22,56 @@ public class ArticleService {
         DocumentReference documentReference = dbFirestore.collection("articles").document(documentId);
         ApiFuture<DocumentSnapshot> future = documentReference.get();
         DocumentSnapshot document = future.get();
-        if(document.exists()){
-            Map<String, Object> data = document.getData();
-            if (data != null && data.containsKey("type")) {
-                String articleType = (String) data.get("type");
-                return switch (articleType) {
-                    case "Lange" -> document.toObject(Lange.class);
-                    case "Inserts" -> document.toObject(Insert.class);
-                    case "SacPoubelle" -> document.toObject(SacPoubelle.class);
-                    case "GantDeToilette" -> document.toObject(GantDeToilette.class);
-                    default -> null;
-                };
-            }
-        }
-        return null;
+        Article article = new Article();
+
+        article.setDocumentId(document.getId());
+
+        //Find the ArticleType using the reference ID from Firebase and set it to the JAVA ArticleType
+        DocumentReference documentReferenceArticleType = (DocumentReference) document.get("articleType");
+        assert documentReferenceArticleType != null;
+        ApiFuture<DocumentSnapshot> futureArticleType = documentReferenceArticleType.get();
+        DocumentSnapshot typeDoc = futureArticleType.get();
+        ArticleType type = typeDoc.toObject(ArticleType.class);
+
+        article.setArticleType(type);
+
+        return article;
+
     }
+
 
     public List<Article> allArticles() throws ExecutionException, InterruptedException {
         CollectionReference collection = dbFirestore.collection("articles");
         ApiFuture<QuerySnapshot> querySnapshot = collection.get();
-
         List<Article> articleList = new ArrayList<>();
         for (DocumentSnapshot doc : querySnapshot.get().getDocuments()) {
-            if(doc.get("type").equals("Lange")){
-                Lange article = doc.toObject(Lange.class);
-                articleList.add(article);
-            }
-            else if (doc.get("type").equals("Sac poubelle")) {
-                SacPoubelle article = doc.toObject(SacPoubelle.class);
-                articleList.add(article);
-            }
-            else if (doc.get("type").equals("Insert")) {
-                Insert article = doc.toObject(Insert.class);
-                articleList.add(article);
-            }
-            else if (doc.get("type").equals("Gant de toilette")) {
-                GantDeToilette article = doc.toObject(GantDeToilette.class);
-                articleList.add(article);
-            }
+            Article article = new Article();
+            article.setDocumentId(doc.getId());
+
+            //Find the ArticleType using the reference ID from Firebase and set it to the JAVA ArticleType
+            DocumentReference documentReferenceArticleType = (DocumentReference) doc.get("articleType");
+            assert documentReferenceArticleType != null;
+            ApiFuture<DocumentSnapshot> futureArticleType = documentReferenceArticleType.get();
+            DocumentSnapshot typeDoc = futureArticleType.get();
+            ArticleType type = typeDoc.toObject(ArticleType.class);
+
+            article.setArticleType(type);
+           articleList.add(article);
+
         }
+
         return articleList;
     }
 
-    public String createArticle(Article article, String size) throws ExecutionException, InterruptedException {
-        String articleType = article.getType();
-        ApiFuture<WriteResult> collectionsApiFuture;
-        // If the article type is Lange, set the size before saving
-        if ("Lange".equals(articleType) && article instanceof Lange lange) {
-            lange.setSize(size);
-            collectionsApiFuture = dbFirestore.collection("articles").document(lange.getDocumentId()).set(lange);
-        } else {
-            // For other article types or if article type is unknown, save as-is
-            dbFirestore.collection("articles").document(article.getDocumentId()).set(article);
-            collectionsApiFuture = dbFirestore.collection("articles").document(article.getDocumentId()).set(article);
-        }
+    public String createArticle(Article article) throws ExecutionException, InterruptedException {
+        ApiFuture<WriteResult> collectionsApiFuture = dbFirestore.collection("articles").document(article.getDocumentId()).set(article);
         return collectionsApiFuture.get().getUpdateTime().toString();
     }
 
-    public String updateArticle(Article article, String size) throws ExecutionException, InterruptedException {
-        String articleType = article.getType();
+    public String updateArticle(Article article) throws ExecutionException, InterruptedException {
         ApiFuture<WriteResult> collectionsApiFuture;
-        // If the article type is Lange, set the size before saving
-        if ("Lange".equals(articleType) && article instanceof Lange lange) {
-            lange.setSize(size);
-            collectionsApiFuture = dbFirestore.collection("articles").document(lange.getDocumentId()).set(lange);
-        } else {
-            // For other article types or if article type is unknown, save as-is
             dbFirestore.collection("articles").document(article.getDocumentId()).set(article);
             collectionsApiFuture = dbFirestore.collection("articles").document(article.getDocumentId()).set(article);
-        }
         return collectionsApiFuture.get().getUpdateTime().toString();
     }
 

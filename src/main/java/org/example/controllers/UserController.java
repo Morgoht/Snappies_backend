@@ -18,9 +18,9 @@ import java.util.concurrent.ExecutionException;
 @Controller
 public class UserController {
 
-    public UserService service;
+    private final UserService service;
 
-    public UserController(UserService service){
+    private UserController(UserService service){
         this.service = service;
     }
 
@@ -37,14 +37,15 @@ public class UserController {
 
     @MutationMapping
     public User  createUser(@Argument String name, @Argument String lastname,
-                           @Argument String username, @Argument String email, @Argument String password) throws ExecutionException, InterruptedException {
+                           @Argument String username, @Argument String email, @Argument String password,@Argument String phoneNumber) throws ExecutionException, InterruptedException {
         User user = new User();
-        user.setDocument_id(UUID.randomUUID().toString());
+        user.setDocumentId(UUID.randomUUID().toString());
         user.setName(name);
         user.setLastname(lastname);
         user.setEmail(email);
         user.setUsername(username);
         user.setPassword(password);
+        user.setPhoneNumber(phoneNumber);
         service.createUser(user);
         return user;
     }
@@ -52,14 +53,15 @@ public class UserController {
 
     @MutationMapping
     public User updateUser(@Argument String name, @Argument String lastname,
-                            @Argument String username, @Argument String email, @Argument String password) throws ExecutionException, InterruptedException {
+                            @Argument String username, @Argument String email, @Argument String password,@Argument String phoneNumber) throws ExecutionException, InterruptedException {
         User user = new User();
-        user.setDocument_id(UUID.randomUUID().toString());
+        user.setDocumentId(UUID.randomUUID().toString());
         user.setName(name);
         user.setLastname(lastname);
         user.setEmail(email);
         user.setUsername(username);
         user.setPassword(password);
+        user.setPhoneNumber(phoneNumber);
         service.createUser(user);
         return user;
 
