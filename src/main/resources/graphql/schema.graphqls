@@ -1,15 +1,10 @@
 type Query {
     userById(userId:ID):User
     allUsers:[User]
-    langeById(documentId: ID!): Lange
-    allLanges: [Lange]
-    insertsById(documentId: ID!): Insert
-    allInserts: [Insert]
-    sacPoubelleById(documentId: ID!): SacPoubelle
-    allSacPoubelle: [SacPoubelle]
-    gantDeToiletteById(documentId: ID!): GantDeToilette
-    allGantDeToilette: [GantDeToilette]
     allArticles:[Article]
+    articleById(articleId:ID):Article
+    allDaycares:[Daycare]
+    daycareById(daycareId:ID):Daycare
 }
 type Mutation {
     createUser(name: String!, lastname: String!, username: String!, email: String!, password: String!): User
@@ -18,6 +13,10 @@ type Mutation {
     createArticle(article: ArticleInput): Article
     updateArticle(article: ArticleInput): Article
     deleteArticle(documentId: ID!): String
+    createDaycare(daycare: DaycareInput): Daycare
+    updateDaycare(daycare: DaycareInput): Daycare
+    deleteDaycare(documentId: ID!): String
+
 
 }
 

@@ -1,11 +1,10 @@
 type Query {
     userById(userId:ID):User
     allUsers:[User]
-    articleById(documentId: ID!): Article
-    allArticles: [Article]!
-    allDaycares: [Daycare]
-    daycareById(DaycareId:ID):Daycare
-
+    allArticles:[Article]
+    articleById(articleId:ID):Article
+    allDaycares:[Daycare]
+    daycareById(daycareId:ID):Daycare
 }
 type Mutation {
     createUser(name: String!, lastname: String!, username: String!, email: String!, password: String!): User
@@ -14,8 +13,10 @@ type Mutation {
     createArticle(article: ArticleInput): Article
     updateArticle(article: ArticleInput): Article
     deleteArticle(documentId: ID!): String
-    createDaycare(name:String!, email:String, address:String!, phoneNumber:String): Daycare
-    updateDaycare(name:String!, email:String, address:String!, phoneNumber:String): Daycare
+    createDaycare(daycare: DaycareInput): Daycare
+    updateDaycare(daycare: DaycareInput): Daycare
+    deleteDaycare(documentId: ID!): String
+
 
 }
 
