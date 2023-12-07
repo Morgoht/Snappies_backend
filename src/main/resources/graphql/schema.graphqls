@@ -1,5 +1,8 @@
 type Query {
     userById(userId:ID):User
-    users:[User]
+    allUsers:[User]
+}
+type Mutation{
+    createUser(name : String! , lastname: String!, username : String!, email: String!, password:String!):User
 }
 
