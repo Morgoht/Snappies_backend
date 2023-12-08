@@ -5,6 +5,10 @@ type Query {
     articleById(articleId:ID):Article
     allDaycares:[Daycare]
     daycareById(daycareId:ID):Daycare
+    allOrder:[Order]
+    orderById: Order
+    allOrderLine: [OrderLine]
+    orderLineById: OrderLine
 }
 type Mutation {
     createUser(name: String!, lastname: String!, username: String!, email: String!, password: String!): User
@@ -16,6 +20,12 @@ type Mutation {
     createDaycare(daycare: DaycareInput): Daycare
     updateDaycare(daycare: DaycareInput): Daycare
     deleteDaycare(documentId: ID!): String
+    createOrder(articles: [ArticleInput], daycare: DaycareInput): Order
+    updateOrder(articles: [ArticleInput], daycare: DaycareInput): Order
+    deleteOrder(documentId: ID!): String
+    createOrderLine(article: ArticleInput!, quantity: Int!): OrderLine
+    updateOrderLine(article: ArticleInput!, quantity: Int!): OrderLine
+    deleteOrderLine(documentId: ID!): String
 
 
 }
