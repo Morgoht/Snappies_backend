@@ -26,6 +26,9 @@ type Mutation {
     createOrderLine(article: ArticleInput!, quantity: Int!): OrderLine
     updateOrderLine(article: ArticleInput!, quantity: Int!): OrderLine
     deleteOrderLine(documentId: ID!): String
+    createDelivery(order: OrderInput!, driver: UserInput!): Delivery
+    updateDelivery(order: OrderInput!, driver: UserInput!): Delivery
+    deleteDelivery(documentId: ID!): String
 
 
 }

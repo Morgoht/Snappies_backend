@@ -7,6 +7,6 @@ import java.util.List;
 @Data
 public class Delivery {
     private String documentId;
-    private Order orders;
+    private Order order;
     private User driver;
 }
