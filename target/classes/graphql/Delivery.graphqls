@@ -1,0 +1,17 @@
+type Delivery {
+    documentId: ID!
+    driver: User!
+    order: Order!
+}
+
+input DeliveryInput {
+    documentId: ID!
+    driver: UserInput!
+    order: OrderInput!
+}
+
+input DeliveryEditInput {
+    documentId: ID!
+    driver: UserEditInput!
+    order: OrderEditInput!
+}

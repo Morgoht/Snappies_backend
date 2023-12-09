@@ -1,0 +1,17 @@
+type Order {
+    documentId: ID!
+    articles: [Article!]!
+    daycare: Daycare!
+}
+
+input OrderInput {
+    documentId: ID!
+    articles: [ArticleInput!]!
+    daycare: DaycareInput!
+}
+
+input OrderEditInput {
+    documentId: ID!
+    articles: [ArticleEditInput!]!
+    daycare: DaycareEditInput!
+}

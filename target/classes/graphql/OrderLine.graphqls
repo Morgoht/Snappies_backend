@@ -1,0 +1,17 @@
+type OrderLine {
+    documentId: ID!
+    article: Article!
+    quantity: Int!
+}
+
+input OrderLineInput {
+    documentId: ID!
+    article: ArticleInput!
+    quantity: Int!
+}
+
+input OrderLineEditInput {
+    documentId: ID!
+    article: ArticleEditInput!
+    quantity: Int!
+}
