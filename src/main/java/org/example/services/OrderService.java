@@ -5,6 +5,8 @@ import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
 import org.example.models.Daycare;
 import org.example.models.Order;
+import org.example.models.OrderLine;
+import org.mockito.internal.matchers.Or;
 import org.springframework.stereotype.Service;
 
 
@@ -99,5 +101,21 @@ public class OrderService {
     public String deleteOrder(String documentId){
         ApiFuture<WriteResult> writeResultApiFuture = dbFirestore.collection("orders").document(documentId).delete();
         return "Successfully deleted order";
+    }
+
+    public Order addOrderLine(String documentId, OrderLine orderLine) throws ExecutionException, InterruptedException {
+
+        DocumentReference orderRef = dbFirestore.collection("orders").document(documentId);
+        // Récupérez le document actuel
+        DocumentSnapshot document = orderRef.get().get();
+        if (document.exists()) {
+            Order existingOrder = document.toObject(Order.class);
+            existingOrder.getOrderLine().add(orderLine);
+            orderRef.set(existingOrder, SetOptions.merge());
+
+            return existingOrder;
+        } else {
+            return null;
+        }
     }
 }

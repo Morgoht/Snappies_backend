@@ -54,7 +54,7 @@ public class OrderController {
     }
 
     @MutationMapping
-    public Delivery addOrderLine(@Argument String documentId, @Argument OrderLine orderLine){
+    public Order addOrderLine(@Argument String documentId, @Argument OrderLine orderLine) throws ExecutionException, InterruptedException {
         return service.addOrderLine(documentId,orderLine);
     }
 
@@ -62,7 +62,7 @@ public class OrderController {
 
 
     @MutationMapping
-    public String deleteorder(@Argument String orderId){
+    public String deleteOrder(@Argument String orderId){
         return service.deleteOrder(orderId);
     }
 

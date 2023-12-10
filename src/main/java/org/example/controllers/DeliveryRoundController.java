@@ -57,7 +57,7 @@ public class DeliveryRoundController {
     }
 
     @MutationMapping
-    public Delivery addDelivery(@Argument String documentId, @Argument Delivery delivery){
+    public Delivery addDelivery(@Argument String documentId, @Argument Delivery delivery) throws ExecutionException, InterruptedException {
         return service.addDelivery(documentId,delivery);
     }
 }
