@@ -9,6 +9,7 @@ type Query {
     orderById: Order
     allOrderLine: [OrderLine]
     orderLineById: OrderLine
+    allDeliveryRounds: [DeliveryRound]
 }
 type Mutation {
     createUser(name: String!, lastname: String!, username: String!, email: String!, password: String!): User
@@ -29,7 +30,6 @@ type Mutation {
     createDelivery(order: OrderInput!, driver: UserInput!): Delivery
     updateDelivery(order: OrderInput!, driver: UserInput!): Delivery
     deleteDelivery(documentId: ID!): String
-
 
 }
 

@@ -1,0 +1,18 @@
+type DeliveryRound {
+    documentId: ID!
+    name: String!
+    deliveries: [Delivery!]!
+}
+
+input DeliveryRoundInput {
+    documentId: ID!
+    name: String!
+    deliveries: [DeliveryInput!]!
+}
+
+input DeliveryRoundEditInput {
+    documentId: ID!
+    name: String!
+    deliveries: [DeliveryEditInput!]!
+}
+
