@@ -4,7 +4,9 @@ import lombok.Data;
 
 @Data
 public class Article {
-    private String documentId;
-    private ArticleType  articleType;
+    String documentId;
+    String name;
+    int reserve;
+    private String storageType;
 
 }

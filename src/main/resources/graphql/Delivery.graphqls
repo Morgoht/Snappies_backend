@@ -2,6 +2,7 @@ type Delivery {
     documentId: ID!
     driver: User!
     order: Order!
+    delivered: Boolean
 }
 
 input DeliveryInput {
@@ -14,4 +15,5 @@ input DeliveryEditInput {
     documentId: ID!
     driver: UserEditInput!
     order: OrderEditInput!
+    delivered: Boolean
 }

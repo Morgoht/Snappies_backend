@@ -1,17 +1,17 @@
 type Order {
     documentId: ID!
-    articles: [Article!]!
+    orderLines: [OrderLine!]!
     daycare: Daycare!
 }
 
 input OrderInput {
     documentId: ID!
-    articles: [ArticleInput!]!
+    orderLines: [OrderLineInput!]!
     daycare: DaycareInput!
 }
 
 input OrderEditInput {
     documentId: ID!
-    articles: [ArticleEditInput!]!
+    orderLines: [OrderLineEditInput!]!
     daycare: DaycareEditInput!
 }

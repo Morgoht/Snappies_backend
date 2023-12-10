@@ -1,5 +1,6 @@
 package org.example.controllers;
 
+import org.example.models.Delivery;
 import org.example.models.OrderLine;
 import org.example.models.Daycare;
 import org.example.models.Order;
@@ -26,13 +27,13 @@ public class OrderController {
     }
 
     @QueryMapping
-    public List<Order> allorders() throws ExecutionException, InterruptedException {
+    public List<Order> allOrders() throws ExecutionException, InterruptedException {
         return service.allOrders();
     }
 
 
     @MutationMapping
-    public Order createorder(@Argument List<OrderLine> orderLines, @Argument Daycare daycare) throws ExecutionException, InterruptedException {
+    public Order createOrder(@Argument List<OrderLine> orderLines, @Argument Daycare daycare) throws ExecutionException, InterruptedException {
         Order order = new Order();
         order.setDocumentId(UUID.randomUUID().toString());
         order.setOrderLine(orderLines);
@@ -42,7 +43,7 @@ public class OrderController {
     }
 
     @MutationMapping
-    public Order updateorder(@Argument Daycare daycare,
+    public Order updateOrder(@Argument Daycare daycare,
                                  @Argument List<OrderLine> orderLines) throws ExecutionException, InterruptedException {
         Order order = new Order();
         order.setDocumentId(UUID.randomUUID().toString());
@@ -50,6 +51,11 @@ public class OrderController {
         order.setOrderLine(orderLines);
         service.updateOrder(order);
         return order;
+    }
+
+    @MutationMapping
+    public Delivery addOrderLine(@Argument String documentId, @Argument OrderLine orderLine){
+        return service.addOrderLine(documentId,orderLine);
     }
 
 

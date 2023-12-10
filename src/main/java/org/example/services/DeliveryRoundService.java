@@ -92,4 +92,28 @@ public class DeliveryRoundService {
         ApiFuture<WriteResult> writeResultApiFuture = dbFirestore.collection("deliveryRounds").document(documentId).delete();
         return "Successfully deleted delivery round";
     }
+
+    public Delivery addDelivery(String documentId, Delivery delivery) throws ExecutionException, InterruptedException {
+        DocumentReference deliveryRoundRef = dbFirestore.collection("deliveryRounds").document(documentId);
+
+        // Fetch existing deliveries
+        ApiFuture<DocumentSnapshot> deliveryRoundFuture = deliveryRoundRef.get();
+        DocumentSnapshot deliveryRoundDocument = deliveryRoundFuture.get();
+        List<DocumentReference> existingDeliveries = (List<DocumentReference>) deliveryRoundDocument.get("deliveries");
+
+        if (existingDeliveries == null) {
+            existingDeliveries = new ArrayList<>();
+        }
+
+        // Add the new delivery to the list of deliveries
+        ApiFuture<DocumentReference> newDeliveryFuture = dbFirestore.collection("deliveries").add(delivery);
+        DocumentReference newDeliveryRef = newDeliveryFuture.get();
+        existingDeliveries.add(newDeliveryRef);
+
+        // Update the 'deliveries' field in the delivery round document
+        deliveryRoundRef.update("deliveries", existingDeliveries);
+
+        return delivery;
+    }
+
 }

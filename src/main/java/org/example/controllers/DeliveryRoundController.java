@@ -1,5 +1,6 @@
 package org.example.controllers;
 
+import org.example.models.Delivery;
 import org.example.models.DeliveryRound;
 import org.example.services.DeliveryRoundService;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -39,11 +40,12 @@ public class DeliveryRoundController {
 
     @MutationMapping
     public DeliveryRound updateDeliveryRound(@Argument String deliveryRoundId,
-                                             @Argument String name)
+                                             @Argument String name, @Argument boolean roundEnded)
             throws ExecutionException, InterruptedException {
         DeliveryRound deliveryRound = new DeliveryRound();
         deliveryRound.setDocumentId(deliveryRoundId);
         deliveryRound.setName(name);
+        deliveryRound.setRoundEnded(roundEnded);
         // You might need to add more logic here based on your actual data model
         service.updateDeliveryRound(deliveryRound);
         return deliveryRound;
@@ -52,5 +54,10 @@ public class DeliveryRoundController {
     @MutationMapping
     public String deleteDeliveryRound(@Argument String deliveryRoundId) {
         return service.deleteDeliveryRound(deliveryRoundId);
+    }
+
+    @MutationMapping
+    public Delivery addDelivery(@Argument String documentId, @Argument Delivery delivery){
+        return service.addDelivery(documentId,delivery);
     }
 }

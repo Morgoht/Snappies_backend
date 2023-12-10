@@ -26,7 +26,7 @@ public class DeliveryController {
     }
 
     @QueryMapping
-    public List<Delivery> allDeliverys() throws ExecutionException, InterruptedException {
+    public List<Delivery> allDeliveries() throws ExecutionException, InterruptedException {
         return service.allDeliveries();
     }
 
@@ -43,16 +43,15 @@ public class DeliveryController {
 
     @MutationMapping
     public Delivery updateDelivery(@Argument Order order,
-                                 @Argument User driver) throws ExecutionException, InterruptedException {
+                                 @Argument User driver, @Argument boolean delivered) throws ExecutionException, InterruptedException {
         Delivery delivery = new Delivery();
         delivery.setDocumentId(UUID.randomUUID().toString());
         delivery.setDriver(driver);
         delivery.setOrder(order);
+        delivery.setDelivered(delivered);
         service.updateDelivery(delivery);
         return delivery;
     }
-
-
 
 
     @MutationMapping

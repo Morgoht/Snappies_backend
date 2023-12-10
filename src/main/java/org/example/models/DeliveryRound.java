@@ -8,4 +8,5 @@ public class DeliveryRound {
     private String documentId;
     private String name;
     private List<Delivery> deliveries;
+    private boolean roundEnded;
 }

@@ -3,6 +3,7 @@ package org.example.services;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
+import org.checkerframework.checker.units.qual.A;
 import org.example.models.*;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +23,12 @@ public class ArticleService {
         DocumentReference documentReference = dbFirestore.collection("articles").document(documentId);
         ApiFuture<DocumentSnapshot> future = documentReference.get();
         DocumentSnapshot document = future.get();
-        Article article = new Article();
+        Article article;
+        if(document.exists()){
+            article = document.toObject(Article.class);
+            return article;
+        }
+        /*Article article = new Article();
 
         article.setDocumentId(document.getId());
 
@@ -34,8 +40,8 @@ public class ArticleService {
         ArticleType type = typeDoc.toObject(ArticleType.class);
 
         article.setArticleType(type);
-
-        return article;
+        */
+        return null;
 
     }
 
@@ -43,7 +49,15 @@ public class ArticleService {
     public List<Article> allArticles() throws ExecutionException, InterruptedException {
         CollectionReference collection = dbFirestore.collection("articles");
         ApiFuture<QuerySnapshot> querySnapshot = collection.get();
-        List<Article> articleList = new ArrayList<>();
+        List<Article> arrayList = new ArrayList<>();
+        for (DocumentSnapshot doc : querySnapshot.get().getDocuments()) {
+            Article article = doc.toObject(Article.class);
+            assert article != null;
+            article.setDocumentId(doc.getId());
+            arrayList.add(article);
+            arrayList.add(article);
+        }
+        /*
         for (DocumentSnapshot doc : querySnapshot.get().getDocuments()) {
             Article article = new Article();
             article.setDocumentId(doc.getId());
@@ -56,11 +70,8 @@ public class ArticleService {
             ArticleType type = typeDoc.toObject(ArticleType.class);
 
             article.setArticleType(type);
-           articleList.add(article);
-
-        }
-
-        return articleList;
+             */
+        return arrayList;
     }
 
     public String createArticle(Article article) throws ExecutionException, InterruptedException {
