@@ -3,6 +3,7 @@ package org.example.services;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
+import com.google.firestore.v1.Document;
 import org.example.models.Daycare;
 import org.example.models.Order;
 import org.example.models.OrderLine;
@@ -25,27 +26,46 @@ public class OrderService {
         if (document.exists()) {
             Order order = new Order();
             order.setDocumentId(document.getId());
-            order.setOrderLine(document.toObject(Order.class).getOrderLine());
-            // Remarque : vous devrez peut-être ajuster le nom du champ dans votre modèle Order
+        //Find the ArticleType using the reference ID from Firebase and set it to the JAVA ArticleType
+            DaycareService daycareService = new DaycareService();
+        order.setDaycare(daycareService.daycareById(findDaycareReference(document)));
 
-            // Trouver la Daycare en utilisant la référence depuis Firebase et la définir sur l'objet JAVA Daycare
-            DocumentReference documentReferenceDaycare = (DocumentReference) document.get("daycare");
-            if (documentReferenceDaycare != null) {
-                ApiFuture<DocumentSnapshot> futureDaycare = documentReferenceDaycare.get();
-                DocumentSnapshot daycareDoc = futureDaycare.get();
+            for (OrderLine orderLine: listOfOrderByReferences(document)
+                 ) {
+                order.addOrderLine(orderLine);
 
-                if (daycareDoc.exists()) {
-                    // Convertir le DocumentSnapshot en objet Daycare et le définir sur l'objet Order
-                    Daycare daycare = daycareDoc.toObject(Daycare.class);
-                    order.setDaycare(daycare);
-                }
             }
-
+            System.out.println(order);
             return order;
         } else {
             // Le document n'existe pas
             return null;
         }
+    }
+
+
+    public List<OrderLine> listOfOrderByReferences(DocumentSnapshot doc) throws ExecutionException, InterruptedException {
+        OrderLineService service = new OrderLineService();
+        List<OrderLine> finalList = new ArrayList<>();
+        List<DocumentReference> refList = (List<DocumentReference>) doc.get("orderLine");
+        assert refList != null;
+        for (DocumentReference ref: refList
+             ) {
+            ApiFuture<DocumentSnapshot> future = ref.get();
+            DocumentSnapshot document = future.get();
+            finalList.add(service.orderLineById(document.getId()));
+        }
+
+        return finalList;
+
+    }
+    public String findDaycareReference(DocumentSnapshot doc) throws ExecutionException, InterruptedException {
+        DocumentReference ref = (DocumentReference) doc.get("daycare");
+        assert ref != null;
+        ApiFuture<DocumentSnapshot> future = ref.get();
+        DocumentSnapshot document = future.get();
+        return document.getId();
+
     }
 
 
@@ -63,7 +83,7 @@ public class OrderService {
         for (QueryDocumentSnapshot document : snapshot.getDocuments()) {
             Order order = new Order();
             order.setDocumentId(document.getId());
-            order.setOrderLine(document.toObject(Order.class).getOrderLine());
+            order.setOrderLines(document.toObject(Order.class).getOrderLines());
             // Remarque : ajustez le nom du champ dans votre modèle Order
 
             // Trouver la Daycare en utilisant la référence depuis Firebase et la définir sur l'objet JAVA Daycare
@@ -109,12 +129,25 @@ public class OrderService {
         // Récupérez le document actuel
         DocumentSnapshot document = orderRef.get().get();
         if (document.exists()) {
-            Order existingOrder = document.toObject(Order.class);
-            existingOrder.getOrderLine().add(orderLine);
-            orderRef.set(existingOrder, SetOptions.merge());
+            Order order = new Order();
+            order.setDocumentId(document.getId());
+            // Remarque : vous devrez peut-être ajuster le nom du champ dans votre modèle Order
 
-            return existingOrder;
+            // Trouver la Daycare en utilisant la référence depuis Firebase et la définir sur l'objet JAVA Daycare
+            DocumentReference documentReferenceDaycare = (DocumentReference) document.get("daycare");
+            if (documentReferenceDaycare != null) {
+                ApiFuture<DocumentSnapshot> futureDaycare = documentReferenceDaycare.get();
+                DocumentSnapshot daycareDoc = futureDaycare.get();
+
+                if (daycareDoc.exists()) {
+                    // Convertir le DocumentSnapshot en objet Daycare et le définir sur l'objet Order
+                    Daycare daycare = daycareDoc.toObject(Daycare.class);
+                    order.setDaycare(daycare);
+                }
+            }
+            return order;
         } else {
+            // Le document n'existe pas
             return null;
         }
     }

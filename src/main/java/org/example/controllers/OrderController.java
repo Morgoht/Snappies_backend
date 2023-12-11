@@ -36,7 +36,7 @@ public class OrderController {
     public Order createOrder(@Argument List<OrderLine> orderLines, @Argument Daycare daycare) throws ExecutionException, InterruptedException {
         Order order = new Order();
         order.setDocumentId(UUID.randomUUID().toString());
-        order.setOrderLine(orderLines);
+        order.setOrderLines(orderLines);
         order.setDaycare(daycare);
         service.createOrder(order);
         return order;
@@ -48,7 +48,7 @@ public class OrderController {
         Order order = new Order();
         order.setDocumentId(UUID.randomUUID().toString());
         order.setDaycare(daycare);
-        order.setOrderLine(orderLines);
+        order.setOrderLines(orderLines);
         service.updateOrder(order);
         return order;
     }

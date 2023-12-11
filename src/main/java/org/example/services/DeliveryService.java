@@ -48,7 +48,7 @@ public class DeliveryService {
 
 
     public List<Delivery> allDeliveries() throws ExecutionException, InterruptedException {
-        CollectionReference collection = dbFirestore.collection("deliveriess");
+        CollectionReference collection = dbFirestore.collection("deliveries");
         ApiFuture<QuerySnapshot> querySnapshot = collection.get();
         List<Delivery> deliveryList = new ArrayList<>();
         for (DocumentSnapshot doc : querySnapshot.get().getDocuments()) {

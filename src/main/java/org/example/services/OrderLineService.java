@@ -17,24 +17,29 @@ public class OrderLineService {
     Firestore dbFirestore = FirestoreClient.getFirestore();
 
     public OrderLine orderLineById(String documentId) throws ExecutionException, InterruptedException {
-        DocumentReference documentReference = dbFirestore.collection("orderLine").document(documentId);
+        DocumentReference documentReference = dbFirestore.collection("orderLines").document(documentId);
         ApiFuture<DocumentSnapshot> future = documentReference.get();
         DocumentSnapshot document = future.get();
         OrderLine orderLine = new OrderLine();
         orderLine.setDocumentId(document.getId());
-        orderLine.setQuantity((Integer) document.get("quantity"));
-
+        orderLine.setQuantity(Math.toIntExact((Long) document.get("quantity")));
         //Find the Article using the reference ID from firebase and set it ti the JAVA Article
-        DocumentReference documentReferenceArticle = (DocumentReference) document.get("articles");
-        assert documentReferenceArticle != null;
-        ApiFuture<DocumentSnapshot> futureArticle = documentReferenceArticle.get();
-        DocumentSnapshot articleDoc = futureArticle.get();
-        Article article = articleDoc.toObject(Article.class);
-        orderLine.setArticle(article);
+        ArticleService articleService = new ArticleService();
+        orderLine.setArticle(articleService.articleById(findArticleReference(document)));
 
         return orderLine;
 
     }
+
+    public String findArticleReference(DocumentSnapshot doc) throws ExecutionException, InterruptedException {
+        DocumentReference ref = (DocumentReference) doc.get("article");
+        assert ref != null;
+        ApiFuture<DocumentSnapshot> future = ref.get();
+        DocumentSnapshot document = future.get();
+        return document.getId();
+
+    }
+
 
 
     public List<OrderLine> allOrderLines() throws ExecutionException, InterruptedException {

@@ -9,7 +9,7 @@ type Query {
     daycareById(daycareId:ID):Daycare
 
     allOrder:[Order]
-    orderById: Order
+    orderById(orderId: ID): Order
 
     allOrderLine: [OrderLine]
     orderLineById: OrderLine
@@ -34,7 +34,8 @@ type Mutation {
     createOrder(articles: [OrderLineInput], daycare: DaycareInput): Order
     updateOrder(articles: [OrderLineInput], daycare: DaycareInput): Order
     deleteOrder(documentId: ID!): String
-    addOrderLine(documentId: ID!, orderInput: OrderInput!): Order
+
+    addOrderLine(documentId: ID!, orderInput: OrderLineInput!): OrderLine
 
     createOrderLine(article: ArticleInput!, quantity: Int!): OrderLine
     updateOrderLine(article: ArticleInput!, quantity: Int!): OrderLine

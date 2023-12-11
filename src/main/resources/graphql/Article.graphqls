@@ -12,6 +12,10 @@ input ArticleInput{
     storageType: String!
 }
 
+input ArticleInputById{
+    documentId:ID!
+}
+
 input ArticleEditInput{
     documentId: ID!
     name: String!

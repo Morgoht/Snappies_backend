@@ -26,6 +26,7 @@ public class ArticleService {
         Article article;
         if(document.exists()){
             article = document.toObject(Article.class);
+            article.setDocumentId(document.getId());
             return article;
         }
         /*Article article = new Article();
