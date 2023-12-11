@@ -24,7 +24,7 @@ type Mutation {
     deleteUser(userId: ID): String
 
     createArticle(article: ArticleInput): Article
-    updateArticle(article: ArticleInput): Article
+    updateArticle(article: ArticleEditInput): Article
     deleteArticle(documentId: ID!): String
 
     createDaycare(daycare: DaycareInput): Daycare

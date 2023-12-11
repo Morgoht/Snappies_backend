@@ -7,7 +7,6 @@ type Daycare {
 }
 
 input DaycareInput {
-    documentId: ID!
     name: String!
     email: String
     address: String
