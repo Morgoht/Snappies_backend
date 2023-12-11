@@ -38,11 +38,11 @@ type Mutation {
     addOrderLine(documentId: ID!, orderInput: OrderLineInput!): OrderLine
 
     createOrderLine(articleId: ID!, quantity: Int!): OrderLine
-    updateOrderLine(article: ArticleInput!, quantity: Int!): OrderLine
+    updateOrderLine(articleId: ID, quantity: Int, orderLineId: ID!): OrderLine
     deleteOrderLine(documentId: ID!): String
 
-    createDelivery(order: OrderInput!, driver: UserInput!): Delivery
-    updateDelivery(order: OrderInput!, driver: UserInput!): Delivery
+    createDelivery(orderId: ID!, driverId: ID!): Delivery
+    updateDelivery(orderId: ID, driverId: ID): Delivery!
     deleteDelivery(documentId: ID!): String
 
     createDeliveryRound(name: String, deliveries:[DeliveryInput]): DeliveryRound

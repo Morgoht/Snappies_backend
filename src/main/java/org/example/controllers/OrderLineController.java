@@ -45,11 +45,11 @@ public class OrderLineController {
     }
 
     @MutationMapping
-    public OrderLine updateOrderLine(@Argument Article article,
-                                 @Argument int quantity) throws ExecutionException, InterruptedException {
+    public OrderLine updateOrderLine(@Argument String articleId,
+                                 @Argument int quantity, @Argument String orderLineId) throws ExecutionException, InterruptedException {
         OrderLine orderLine = new OrderLine();
-        orderLine.setDocumentId(UUID.randomUUID().toString());
-        orderLine.setArticle(article);
+        orderLine.setDocumentId(service.orderLineById(orderLineId).getDocumentId());
+        orderLine.setArticle(articleService.articleById(articleId));
         orderLine.setQuantity(quantity);
         service.updateOrderLine(orderLine);
         return orderLine;

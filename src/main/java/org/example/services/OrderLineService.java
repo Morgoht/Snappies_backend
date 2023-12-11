@@ -37,7 +37,6 @@ public class OrderLineService {
         ApiFuture<DocumentSnapshot> future = ref.get();
         DocumentSnapshot document = future.get();
         return document.getId();
-
     }
 
 
@@ -64,13 +63,13 @@ public class OrderLineService {
     }
 
     public String createOrderLine(OrderLine orderLine) throws ExecutionException, InterruptedException {
-        ApiFuture<WriteResult> collectionsApiFuture = dbFirestore.collection("orderLine").document(orderLine.getDocumentId()).set(orderLine);
+        ApiFuture<WriteResult> collectionsApiFuture = dbFirestore.collection("orderLines").document(orderLine.getDocumentId()).set(orderLine);
         return collectionsApiFuture.get().getUpdateTime().toString();
     }
 
     public String updateOrderLine(OrderLine orderLine) throws ExecutionException, InterruptedException {
         ApiFuture<WriteResult> collectionsApiFuture;
-        dbFirestore.collection("orderLine").document(orderLine.getDocumentId()).set(orderLine);
+        dbFirestore.collection("orderLines").document(orderLine.getDocumentId()).set(orderLine);
         collectionsApiFuture = dbFirestore.collection("articles").document(orderLine.getDocumentId()).set(orderLine);
         return collectionsApiFuture.get().getUpdateTime().toString();
     }
