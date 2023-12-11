@@ -81,7 +81,7 @@ public class OrderService {
 
 
     public String deleteOrder(String documentId){
-        ApiFuture<WriteResult> writeResultApiFuture = dbFirestore.collection("orders").document(documentId).delete();
+        dbFirestore.collection("orders").document(documentId).delete();
         return "Successfully deleted order";
     }
 

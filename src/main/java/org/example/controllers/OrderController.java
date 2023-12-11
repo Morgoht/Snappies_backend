@@ -33,11 +33,8 @@ public class OrderController {
 
 
     @MutationMapping
-    public Order createOrder(@Argument List<OrderLine> orderLines, @Argument Daycare daycare) throws ExecutionException, InterruptedException {
-        Order order = new Order();
+    public Order createOrder(@Argument Order order) throws ExecutionException, InterruptedException {
         order.setDocumentId(UUID.randomUUID().toString());
-        order.setOrderLines(orderLines);
-        order.setDaycare(daycare);
         service.createOrder(order);
         return order;
     }

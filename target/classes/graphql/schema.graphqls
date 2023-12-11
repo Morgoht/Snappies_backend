@@ -22,29 +22,29 @@ type Query {
 }
 type Mutation {
     createUser(name: String!, lastname: String!, username: String!, email: String!, password: String!): User
-    updateUser(name: String!, lastname: String!, username: String!, email: String!, password: String!): User
+    updateUser(user: UserEditInput): User
     deleteUser(userId: ID): String
 
     createArticle(article: ArticleInput): Article
-    updateArticle(article: ArticleInput): Article
+    updateArticle(article: ArticleEditInput): Article
     deleteArticle(documentId: ID!): String
 
     createDaycare(daycare: DaycareInput): Daycare
-    updateDaycare(daycare: DaycareInput): Daycare
+    updateDaycare(daycare: DaycareEditInput): Daycare
     deleteDaycare(documentId: ID!): String
 
-    createOrder(articles: [OrderLineInput], daycare: DaycareInput): Order
+    createOrder(order: OrderInput): Order
     updateOrder(articles: [OrderLineInput], daycare: DaycareInput): Order
     deleteOrder(documentId: ID!): String
 
     addOrderLine(documentId: ID!, orderInput: OrderLineInput!): OrderLine
 
-    createOrderLine(article: ArticleInput!, quantity: Int!): OrderLine
-    updateOrderLine(article: ArticleInput!, quantity: Int!): OrderLine
+    createOrderLine(articleId: ID!, quantity: Int!): OrderLine
+    updateOrderLine(articleId: ID, quantity: Int, orderLineId: ID!): OrderLine
     deleteOrderLine(documentId: ID!): String
 
-    createDelivery(order: OrderInput!, driver: UserInput!): Delivery
-    updateDelivery(order: OrderInput!, driver: UserInput!): Delivery
+    createDelivery(orderId: ID!, driverId: ID!): Delivery
+    updateDelivery(orderId: ID, driverId: ID): Delivery!
     deleteDelivery(documentId: ID!): String
 
     createDeliveryRound(name: String, deliveries:[DeliveryInput]): DeliveryRound

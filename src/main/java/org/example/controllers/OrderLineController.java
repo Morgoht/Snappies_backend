@@ -2,6 +2,7 @@ package org.example.controllers;
 
 import org.example.models.Article;
 import org.example.models.OrderLine;
+import org.example.services.ArticleService;
 import org.example.services.OrderLineService;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
@@ -14,9 +15,12 @@ import java.util.concurrent.ExecutionException;
 @Controller
 public class OrderLineController {
     private final OrderLineService service;
+    private final ArticleService articleService;
 
-    public OrderLineController(OrderLineService service){
+    public OrderLineController(OrderLineService service, ArticleService articleService){
+
         this.service = service;
+        this.articleService = articleService;
     }
 
     @QueryMapping
@@ -31,21 +35,21 @@ public class OrderLineController {
 
 
     @MutationMapping
-    public OrderLine createOrderLine(@Argument Article article, @Argument int quantity) throws ExecutionException, InterruptedException {
+    public OrderLine createOrderLine(@Argument String articleId, @Argument int quantity) throws ExecutionException, InterruptedException {
         OrderLine orderLine = new OrderLine();
         orderLine.setDocumentId(UUID.randomUUID().toString());
-        orderLine.setArticle(article);
+        orderLine.setArticle(articleService.articleById(articleId));
         orderLine.setQuantity(quantity);
         service.createOrderLine(orderLine);
         return orderLine;
     }
 
     @MutationMapping
-    public OrderLine updateOrderLine(@Argument Article article,
-                                 @Argument int quantity) throws ExecutionException, InterruptedException {
+    public OrderLine updateOrderLine(@Argument String articleId,
+                                 @Argument int quantity, @Argument String orderLineId) throws ExecutionException, InterruptedException {
         OrderLine orderLine = new OrderLine();
-        orderLine.setDocumentId(UUID.randomUUID().toString());
-        orderLine.setArticle(article);
+        orderLine.setDocumentId(service.orderLineById(orderLineId).getDocumentId());
+        orderLine.setArticle(articleService.articleById(articleId));
         orderLine.setQuantity(quantity);
         service.updateOrderLine(orderLine);
         return orderLine;

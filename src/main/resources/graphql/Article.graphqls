@@ -6,7 +6,6 @@ type Article {
 }
 
 input ArticleInput{
-    documentId: ID!
     name: String!
     reserve: Int!
     storageType: String!
@@ -18,7 +17,7 @@ input ArticleInputById{
 
 input ArticleEditInput{
     documentId: ID!
-    name: String!
-    reserve: Int!
-    storageType: String!
+    name: String
+    reserve: Int
+    storageType: String
 }

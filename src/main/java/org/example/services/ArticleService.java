@@ -3,11 +3,11 @@ package org.example.services;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
-import org.checkerframework.checker.units.qual.A;
 import org.example.models.*;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -82,11 +82,26 @@ public class ArticleService {
     }
 
     public String updateArticle(Article article) throws ExecutionException, InterruptedException {
-        ApiFuture<WriteResult> collectionsApiFuture;
-            dbFirestore.collection("articles").document(article.getDocumentId()).set(article);
-            collectionsApiFuture = dbFirestore.collection("articles").document(article.getDocumentId()).set(article);
+        Map<String, Object> updates = new HashMap<>();
+
+        if (article.getName() != null) {
+            updates.put("name", article.getName());
+        }
+        if (article.getReserve() != 0) {
+            updates.put("reserve", article.getReserve());
+        }
+        if (article.getStorageType() != null){
+            updates.put("storageType", article.getStorageType());
+        }
+        ApiFuture<WriteResult> collectionsApiFuture = dbFirestore
+                .collection("articles")
+                .document(article.getDocumentId())
+                .update(updates);
+
         return collectionsApiFuture.get().getUpdateTime().toString();
     }
+
+
 
 
     public String deleteArticle(String documentId){
