@@ -2,17 +2,17 @@ type Delivery {
     documentId: ID!
     driver: User!
     order: Order!
-    delivered: Boolean
 }
 
 input DeliveryInput {
+
     driver: UserInput!
     order: OrderInput!
     delivered: Boolean
 }
 
+
 input DeliveryEditInput {
-    documentId: ID!
     driver: UserEditInput
     order: OrderEditInput
     delivered: Boolean

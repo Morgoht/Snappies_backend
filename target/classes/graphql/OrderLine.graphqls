@@ -5,16 +5,11 @@ type OrderLine {
 }
 
 input OrderLineInput {
-    article: ArticleInputById!
+    articleId: ID!
     quantity: Int!
-}
-
-input OrderLineById {
-    documentId: ID!
 }
 
 input OrderLineEditInput {
-    documentId: ID!
-    article: ArticleInputById!
-    quantity: Int!
+    articleId: ID
+    quantity: Int
 }
