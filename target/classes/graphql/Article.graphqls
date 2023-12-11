@@ -1,15 +1,23 @@
 type Article {
     documentId: ID!
-    articleType: ArticleType!
+    name: String!
+    reserve: Int!
+    storageType: String!
 }
 
-
-input ArticleInput {
-    documentId: ID!
-    articleType: ArticleTypeInput!
+input ArticleInput{
+    name: String!
+    reserve: Int!
+    storageType: String!
 }
 
-input ArticleEditInput {
+input ArticleInputById{
+    documentId:ID!
+}
+
+input ArticleEditInput{
     documentId: ID!
-    articleType: ArticleTypeInput!
+    name: String!
+    reserve: Int!
+    storageType: String!
 }

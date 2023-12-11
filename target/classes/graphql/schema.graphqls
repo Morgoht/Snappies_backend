@@ -1,32 +1,46 @@
 type Query {
     userById(userId:ID):User
     allUsers:[User]
+
     allArticles:[Article]
     articleById(articleId:ID):Article
+
     allDaycares:[Daycare]
     daycareById(daycareId:ID):Daycare
+
     allOrder:[Order]
-    orderById: Order
+    orderById(orderId: ID): Order
+
     allOrderLine: [OrderLine]
     orderLineById: OrderLine
+
     allDeliveryRounds: [DeliveryRound]
+
+    allDeliveries: [Delivery]
 }
 type Mutation {
     createUser(name: String!, lastname: String!, username: String!, email: String!, password: String!): User
     updateUser(name: String!, lastname: String!, username: String!, email: String!, password: String!): User
     deleteUser(userId: ID): String
+
     createArticle(article: ArticleInput): Article
     updateArticle(article: ArticleInput): Article
     deleteArticle(documentId: ID!): String
+
     createDaycare(daycare: DaycareInput): Daycare
-    updateDaycare(daycare: DaycareInput): Daycare
+    updateDaycare(daycare: DaycareEditInput): Daycare
     deleteDaycare(documentId: ID!): String
-    createOrder(articles: [ArticleInput], daycare: DaycareInput): Order
-    updateOrder(articles: [ArticleInput], daycare: DaycareInput): Order
+
+    createOrder(articles: [OrderLineInput], daycare: DaycareInput): Order
+    updateOrder(articles: [OrderLineInput], daycare: DaycareInput): Order
     deleteOrder(documentId: ID!): String
+
+    addOrderLine(documentId: ID!, orderInput: OrderLineInput!): OrderLine
+
     createOrderLine(article: ArticleInput!, quantity: Int!): OrderLine
     updateOrderLine(article: ArticleInput!, quantity: Int!): OrderLine
     deleteOrderLine(documentId: ID!): String
+
     createDelivery(order: OrderInput!, driver: UserInput!): Delivery
     updateDelivery(order: OrderInput!, driver: UserInput!): Delivery
     deleteDelivery(documentId: ID!): String

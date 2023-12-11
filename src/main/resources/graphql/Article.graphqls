@@ -6,7 +6,6 @@ type Article {
 }
 
 input ArticleInput{
-    documentId: ID!
     name: String!
     reserve: Int!
     storageType: String!

@@ -5,9 +5,7 @@ import org.example.services.DaycareService;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
 import java.util.UUID;
@@ -33,28 +31,15 @@ public class DaycareController {
 
 
     @MutationMapping
-    public Daycare  createDaycare(@Argument String name, @Argument String email, @Argument String address,
-                            @Argument String phoneNumber) throws ExecutionException, InterruptedException {
-        Daycare daycare = new Daycare();
+    public Daycare  createDaycare(@Argument Daycare daycare) throws ExecutionException, InterruptedException {
         daycare.setDocumentId(UUID.randomUUID().toString());
-        daycare.setName(name);
-        daycare.setEmail(email);
-        daycare.setAddress(address);
-        daycare.setPhoneNumber(phoneNumber);
         service.createDaycare(daycare);
         return daycare;
     }
 
 
     @MutationMapping
-    public Daycare  updateDaycare(@Argument String name, @Argument String email, @Argument String address,
-                                  @Argument String phoneNumber) throws ExecutionException, InterruptedException {
-        Daycare daycare = new Daycare();
-        daycare.setDocumentId(UUID.randomUUID().toString());
-        daycare.setName(name);
-        daycare.setEmail(email);
-        daycare.setAddress(address);
-        daycare.setPhoneNumber(phoneNumber);
+    public Daycare  updateDaycare(@Argument Daycare daycare) throws ExecutionException, InterruptedException {
         service.updateDaycare(daycare);
         return daycare;
 

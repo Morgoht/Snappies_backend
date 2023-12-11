@@ -28,7 +28,7 @@ type Mutation {
     deleteArticle(documentId: ID!): String
 
     createDaycare(daycare: DaycareInput): Daycare
-    updateDaycare(daycare: DaycareInput): Daycare
+    updateDaycare(daycare: DaycareEditInput): Daycare
     deleteDaycare(documentId: ID!): String
 
     createOrder(articles: [OrderLineInput], daycare: DaycareInput): Order
