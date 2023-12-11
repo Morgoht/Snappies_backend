@@ -2,17 +2,20 @@ type DeliveryRound {
     documentId: ID!
     name: String!
     deliveries: [Delivery!]!
+    roundEnded: Boolean
 }
 
 input DeliveryRoundInput {
     documentId: ID!
     name: String!
     deliveries: [DeliveryInput!]!
+    roundEnded: Boolean
 }
 
 input DeliveryRoundEditInput {
     documentId: ID!
     name: String!
     deliveries: [DeliveryEditInput!]!
+    roundEnded: Boolean
 }
 
