@@ -96,4 +96,6 @@ public class DeliveryService {
         ApiFuture<WriteResult> writeResultApiFuture = dbFirestore.collection("deliveries").document(documentId).delete();
         return "Successfully deleted delivery";
     }
+
+
 }

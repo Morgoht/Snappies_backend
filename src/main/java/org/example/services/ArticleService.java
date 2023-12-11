@@ -64,6 +64,7 @@ public class ArticleService {
             article.setDocumentId(doc.getId());
 
             //Find the ArticleType using the reference ID from Firebase and set it to the JAVA ArticleType
+
             DocumentReference documentReferenceArticleType = (DocumentReference) doc.get("articleType");
             assert documentReferenceArticleType != null;
             ApiFuture<DocumentSnapshot> futureArticleType = documentReferenceArticleType.get();

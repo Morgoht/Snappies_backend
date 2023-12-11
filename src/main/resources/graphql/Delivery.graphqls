@@ -9,6 +9,7 @@ input DeliveryInput {
     documentId: ID!
     driver: UserInput!
     order: OrderInput!
+    delivered: Boolean
 }
 
 input DeliveryEditInput {
