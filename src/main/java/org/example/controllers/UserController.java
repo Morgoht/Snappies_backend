@@ -52,19 +52,9 @@ public class UserController {
 
 
     @MutationMapping
-    public User updateUser(@Argument String name, @Argument String lastname,
-                            @Argument String username, @Argument String email, @Argument String password,@Argument String phoneNumber) throws ExecutionException, InterruptedException {
-        User user = new User();
-        user.setDocumentId(UUID.randomUUID().toString());
-        user.setName(name);
-        user.setLastname(lastname);
-        user.setEmail(email);
-        user.setUsername(username);
-        user.setPassword(password);
-        user.setPhoneNumber(phoneNumber);
-        service.createUser(user);
+    public User updateUser(@Argument User user) throws ExecutionException, InterruptedException {
+        service.updateUser(user);
         return user;
-
     }
 
     @MutationMapping

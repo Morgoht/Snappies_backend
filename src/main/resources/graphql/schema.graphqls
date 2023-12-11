@@ -20,7 +20,7 @@ type Query {
 }
 type Mutation {
     createUser(name: String!, lastname: String!, username: String!, email: String!, password: String!): User
-    updateUser(name: String!, lastname: String!, username: String!, email: String!, password: String!): User
+    updateUser(user: UserEditInput): User
     deleteUser(userId: ID): String
 
     createArticle(article: ArticleInput): Article

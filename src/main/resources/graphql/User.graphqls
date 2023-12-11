@@ -18,10 +18,11 @@ input UserInput{
 }
 
 input UserEditInput {
-    id: String
-    lastname: String!
-    username: String!
-    email: String!
-    password: String!
+    documentId: String!
+    name: String
+    lastname: String
+    username: String
+    email: String
+    password: String
     phoneNumber: String
 }
