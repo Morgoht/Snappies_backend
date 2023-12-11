@@ -37,7 +37,7 @@ type Mutation {
 
     addOrderLine(documentId: ID!, orderInput: OrderLineInput!): OrderLine
 
-    createOrderLine(article: ArticleInput!, quantity: Int!): OrderLine
+    createOrderLine(articleId: ID!, quantity: Int!): OrderLine
     updateOrderLine(article: ArticleInput!, quantity: Int!): OrderLine
     deleteOrderLine(documentId: ID!): String
 
