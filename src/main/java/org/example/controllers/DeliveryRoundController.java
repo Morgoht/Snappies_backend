@@ -27,6 +27,11 @@ public class DeliveryRoundController {
         return service.allDeliveryRounds();
     }
 
+    @QueryMapping
+    public DeliveryRound deliveryRoundById(@Argument String deliveryRoundId) throws ExecutionException, InterruptedException {
+        return service.deliveryRoundById(deliveryRoundId);
+    }
+
     @MutationMapping
     public DeliveryRound createDeliveryRound(@Argument String name)
             throws ExecutionException, InterruptedException {

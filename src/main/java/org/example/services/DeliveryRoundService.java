@@ -5,6 +5,7 @@ import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
 import org.example.models.Delivery;
 import org.example.models.DeliveryRound;
+import org.example.models.Order;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -15,58 +16,45 @@ import java.util.concurrent.ExecutionException;
 public class DeliveryRoundService {
     Firestore dbFirestore = FirestoreClient.getFirestore();
 
+
+    public DeliveryRound setDeliveryRoundFromDocumentSnapshot(DocumentSnapshot doc) throws ExecutionException, InterruptedException {
+        if (doc.exists()) {
+            //Create Order and set ID
+            DeliveryRound deliveryRound = new DeliveryRound();
+            deliveryRound.setDocumentId(doc.getId());
+
+            //Instanciate required Services
+            DeliveryService deliveryService = new DeliveryService();
+            //Find and fill the Deliveries table
+            for (String id: UtilService.listOfReferences(doc,"deliveries")
+            ) {
+                deliveryRound.addDelivery(deliveryService.deliveryById(id));
+            }
+
+            deliveryRound.setRoundEnded((Boolean) doc.get("roundEnded"));
+            deliveryRound.setName((String) doc.get("name"));
+
+            return deliveryRound;
+        } else {
+            return null;
+        }
+    }
+
+
     public DeliveryRound deliveryRoundById(String documentId) throws ExecutionException, InterruptedException {
-        DocumentReference documentReference = dbFirestore.collection("deliveryRounds").document(documentId);
+        DocumentReference documentReference = dbFirestore.collection("deliveriesRounds").document(documentId);
         ApiFuture<DocumentSnapshot> future = documentReference.get();
         DocumentSnapshot document = future.get();
-        DeliveryRound deliveryRound = new DeliveryRound();
-
-        deliveryRound.setDocumentId(document.getId());
-        deliveryRound.setName(document.getString("name"));
-
-        // You might need to adapt this part based on your actual data model
-        List<Delivery> deliveries = new ArrayList<>();
-        List<DocumentReference> deliveryReferences = (List<DocumentReference>) document.get("deliveries");
-
-        if (deliveryReferences != null) {
-            for (DocumentReference deliveryReference : deliveryReferences) {
-                // Fetch and add deliveries
-                ApiFuture<DocumentSnapshot> deliveryFuture = deliveryReference.get();
-                DocumentSnapshot deliveryDocument = deliveryFuture.get();
-                Delivery delivery = deliveryDocument.toObject(Delivery.class);
-                deliveries.add(delivery);
-            }
-        }
-
-        deliveryRound.setDeliveries(deliveries);
-        return deliveryRound;
+        return setDeliveryRoundFromDocumentSnapshot(document);
     }
 
     public List<DeliveryRound> allDeliveryRounds() throws ExecutionException, InterruptedException {
-        CollectionReference collection = dbFirestore.collection("deliveryRounds");
+        CollectionReference collection = dbFirestore.collection("deliveriesRounds");
         ApiFuture<QuerySnapshot> querySnapshot = collection.get();
         List<DeliveryRound> deliveryRoundList = new ArrayList<>();
 
         for (DocumentSnapshot doc : querySnapshot.get().getDocuments()) {
-            DeliveryRound deliveryRound = new DeliveryRound();
-            deliveryRound.setDocumentId(doc.getId());
-            deliveryRound.setName(doc.getString("name"));
-
-            // Fetch and add deliveries
-            List<Delivery> deliveries = new ArrayList<>();
-            List<DocumentReference> deliveryReferences = (List<DocumentReference>) doc.get("deliveries");
-
-            if (deliveryReferences != null) {
-                for (DocumentReference deliveryReference : deliveryReferences) {
-                    ApiFuture<DocumentSnapshot> deliveryFuture = deliveryReference.get();
-                    DocumentSnapshot deliveryDocument = deliveryFuture.get();
-                    Delivery delivery = deliveryDocument.toObject(Delivery.class);
-                    deliveries.add(delivery);
-                }
-            }
-
-            deliveryRound.setDeliveries(deliveries);
-            deliveryRoundList.add(deliveryRound);
+            deliveryRoundList.add(setDeliveryRoundFromDocumentSnapshot(doc));
         }
 
         return deliveryRoundList;
@@ -74,7 +62,7 @@ public class DeliveryRoundService {
 
     public String createDeliveryRound(DeliveryRound deliveryRound) throws ExecutionException, InterruptedException {
         ApiFuture<WriteResult> collectionsApiFuture = dbFirestore
-                .collection("deliveryRounds")
+                .collection("deliveriesRounds")
                 .document(deliveryRound.getDocumentId())
                 .set(deliveryRound);
         return collectionsApiFuture.get().getUpdateTime().toString();
@@ -82,19 +70,19 @@ public class DeliveryRoundService {
 
     public String updateDeliveryRound(DeliveryRound deliveryRound) throws ExecutionException, InterruptedException {
         ApiFuture<WriteResult> collectionsApiFuture = dbFirestore
-                .collection("deliveryRounds")
+                .collection("deliveriesRounds")
                 .document(deliveryRound.getDocumentId())
                 .set(deliveryRound);
         return collectionsApiFuture.get().getUpdateTime().toString();
     }
 
     public String deleteDeliveryRound(String documentId) {
-        ApiFuture<WriteResult> writeResultApiFuture = dbFirestore.collection("deliveryRounds").document(documentId).delete();
+        ApiFuture<WriteResult> writeResultApiFuture = dbFirestore.collection("deliveriesRounds").document(documentId).delete();
         return "Successfully deleted delivery round";
     }
 
     public Delivery addDelivery(String documentId, Delivery delivery) throws ExecutionException, InterruptedException {
-        DocumentReference deliveryRoundRef = dbFirestore.collection("deliveryRounds").document(documentId);
+        DocumentReference deliveryRoundRef = dbFirestore.collection("deliveriesRounds").document(documentId);
 
         // Fetch existing deliveries
         ApiFuture<DocumentSnapshot> deliveryRoundFuture = deliveryRoundRef.get();

@@ -1,22 +1,24 @@
 type Query {
-    userById(userId:ID):User
+    userById(userId:ID!):User
     allUsers:[User]
 
     allArticles:[Article]
-    articleById(articleId:ID):Article
+    articleById(articleId:ID!):Article
 
     allDaycares:[Daycare]
-    daycareById(daycareId:ID):Daycare
+    daycareById(daycareId:ID!):Daycare
 
-    allOrder:[Order]
-    orderById(orderId: ID): Order
+    allOrders:[Order]
+    orderById(orderId: ID!): Order
 
-    allOrderLine: [OrderLine]
-    orderLineById: OrderLine
+    allOrderLines: [OrderLine]
+    orderLineById(orderLineId: ID!): OrderLine
 
     allDeliveryRounds: [DeliveryRound]
+    deliveryRoundById(deliveryRoundId:ID!):DeliveryRound
 
     allDeliveries: [Delivery]
+    deliveryById(deliveryId: ID!):Delivery
 }
 type Mutation {
     createUser(name: String!, lastname: String!, username: String!, email: String!, password: String!): User

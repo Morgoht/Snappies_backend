@@ -18,54 +18,35 @@ import java.util.concurrent.ExecutionException;
 public class OrderService {
     Firestore dbFirestore = FirestoreClient.getFirestore();
 
-    public Order orderById(String documentId) throws ExecutionException, InterruptedException {
-        DocumentReference documentReference = dbFirestore.collection("orders").document(documentId);
-        ApiFuture<DocumentSnapshot> future = documentReference.get();
-        DocumentSnapshot document = future.get();
-
-        if (document.exists()) {
+    public Order setOrderFromDocumentSnapshot(DocumentSnapshot doc) throws ExecutionException, InterruptedException {
+        if (doc.exists()) {
+            //Create Order and set ID
             Order order = new Order();
-            order.setDocumentId(document.getId());
-        //Find the ArticleType using the reference ID from Firebase and set it to the JAVA ArticleType
+            order.setDocumentId(doc.getId());
+
+            //Instanciate required Services
             DaycareService daycareService = new DaycareService();
-        order.setDaycare(daycareService.daycareById(findDaycareReference(document)));
+            OrderLineService orderLineService = new OrderLineService();
 
-            for (OrderLine orderLine: listOfOrderByReferences(document)
-                 ) {
-                order.addOrderLine(orderLine);
+            //Find the daycare by the reference from Firebase and set the Order.Daycare
+            order.setDaycare(daycareService.daycareById(UtilService.findByReference(doc,"daycare")));
 
+            //Find and fill the Orderlines table with Orderlines
+            for (String id: UtilService.listOfReferences(doc,"orderLine")
+            ) {
+                order.addOrderLine(orderLineService.orderLineById(id));
             }
-            System.out.println(order);
             return order;
         } else {
-            // Le document n'existe pas
             return null;
         }
     }
 
-
-    public List<OrderLine> listOfOrderByReferences(DocumentSnapshot doc) throws ExecutionException, InterruptedException {
-        OrderLineService service = new OrderLineService();
-        List<OrderLine> finalList = new ArrayList<>();
-        List<DocumentReference> refList = (List<DocumentReference>) doc.get("orderLine");
-        assert refList != null;
-        for (DocumentReference ref: refList
-             ) {
-            ApiFuture<DocumentSnapshot> future = ref.get();
-            DocumentSnapshot document = future.get();
-            finalList.add(service.orderLineById(document.getId()));
-        }
-
-        return finalList;
-
-    }
-    public String findDaycareReference(DocumentSnapshot doc) throws ExecutionException, InterruptedException {
-        DocumentReference ref = (DocumentReference) doc.get("daycare");
-        assert ref != null;
-        ApiFuture<DocumentSnapshot> future = ref.get();
+    public Order orderById(String documentId) throws ExecutionException, InterruptedException {
+        DocumentReference documentReference = dbFirestore.collection("orders").document(documentId);
+        ApiFuture<DocumentSnapshot> future = documentReference.get();
         DocumentSnapshot document = future.get();
-        return document.getId();
-
+        return setOrderFromDocumentSnapshot(document);
     }
 
 
@@ -79,27 +60,8 @@ public class OrderService {
         // Initialiser la liste d'orders
         List<Order> orders = new ArrayList<>();
 
-        // Parcourir les documents et les convertir en objets Order
         for (QueryDocumentSnapshot document : snapshot.getDocuments()) {
-            Order order = new Order();
-            order.setDocumentId(document.getId());
-            order.setOrderLines(document.toObject(Order.class).getOrderLines());
-            // Remarque : ajustez le nom du champ dans votre modèle Order
-
-            // Trouver la Daycare en utilisant la référence depuis Firebase et la définir sur l'objet JAVA Daycare
-            DocumentReference documentReferenceDaycare = (DocumentReference) document.get("daycare");
-            if (documentReferenceDaycare != null) {
-                ApiFuture<DocumentSnapshot> futureDaycare = documentReferenceDaycare.get();
-                DocumentSnapshot daycareDoc = futureDaycare.get();
-
-                if (daycareDoc.exists()) {
-                    // Convertir le DocumentSnapshot en objet Daycare et le définir sur l'objet Order
-                    Daycare daycare = daycareDoc.toObject(Daycare.class);
-                    order.setDaycare(daycare);
-                }
-            }
-
-            orders.add(order);
+            orders.add(setOrderFromDocumentSnapshot(document));
         }
 
         return orders;
