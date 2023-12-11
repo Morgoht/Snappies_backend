@@ -13,9 +13,13 @@ input DaycareInput {
     phoneNumber: String
 }
 
+input DaycareInputById {
+    documentId:ID!
+}
+
 input DaycareEditInput {
     documentId: ID!
-    name: String!
+    name: String
     email: String
     address: String
     phoneNumber: String
