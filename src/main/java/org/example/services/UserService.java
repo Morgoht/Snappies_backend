@@ -23,6 +23,7 @@ public class UserService {
         User user;
         if(document.exists()){
             user = document.toObject(User.class);
+            user.setDocumentId(document.getId());
             return user;
         }
         return null;
