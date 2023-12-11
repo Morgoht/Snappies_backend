@@ -15,7 +15,7 @@ public class DaycareService {
     Firestore dbFirestore = FirestoreClient.getFirestore();
 
     public Daycare daycareById(String documentId) throws ExecutionException, InterruptedException {
-        DocumentReference documentReference = dbFirestore.collection("creches").document(documentId);
+        DocumentReference documentReference = dbFirestore.collection("daycares").document(documentId);
         ApiFuture<DocumentSnapshot> future = documentReference.get();
         DocumentSnapshot document = future.get();
         Daycare daycare;

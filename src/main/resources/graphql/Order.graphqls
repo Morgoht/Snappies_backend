@@ -1,0 +1,16 @@
+type Order {
+    documentId: ID!
+    orderLines: [OrderLine!]!
+    daycare: Daycare!
+}
+
+input OrderInput {
+    orderLines: [OrderLineInput]!
+    daycare: DaycareInputById!
+}
+
+input OrderEditInput {
+    documentId: ID!
+    orderLines: [OrderLineEditInput!]!
+    daycare: DaycareEditInput!
+}
