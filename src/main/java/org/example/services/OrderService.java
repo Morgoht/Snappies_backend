@@ -68,10 +68,12 @@ public class OrderService {
     }
 
     public String createOrder(Order order, String daycareId) throws ExecutionException, InterruptedException {
-        Order newOrder = order;
-        DaycareService daycareService = new DaycareService();
-        newOrder.setDaycare(daycareService.daycareById(daycareId));
-        ApiFuture<WriteResult> collectionsApiFuture = dbFirestore.collection("orders").document(order.getDocumentId()).set(newOrder);
+        ApiFuture<WriteResult> collectionsApiFuture = dbFirestore.collection("orders").document(order.getDocumentId()).set(order);
+        DocumentReference daycareRef = dbFirestore.collection("daycares").document(daycareId);
+        dbFirestore.collection("orders")
+                .document(order.getDocumentId())
+                .update("daycare", daycareRef);
+
         return collectionsApiFuture.get().getUpdateTime().toString();
     }
 
