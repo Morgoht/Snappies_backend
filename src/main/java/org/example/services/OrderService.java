@@ -70,6 +70,7 @@ public class OrderService {
     public String createOrder(Order order, String daycareId) throws ExecutionException, InterruptedException {
         ApiFuture<WriteResult> collectionsApiFuture = dbFirestore.collection("orders").document(order.getDocumentId()).set(order);
         DocumentReference daycareRef = dbFirestore.collection("daycares").document(daycareId);
+        System.out.println(daycareRef);
         dbFirestore.collection("orders")
                 .document(order.getDocumentId())
                 .update("daycare", daycareRef);
@@ -77,11 +78,15 @@ public class OrderService {
         return collectionsApiFuture.get().getUpdateTime().toString();
     }
 
-    public String updateOrder(Order order) throws ExecutionException, InterruptedException {
-        ApiFuture<WriteResult> collectionsApiFuture;
+    public Order updateOrder(String orderId, String daycareId) throws ExecutionException, InterruptedException {
+        Order order = this.orderById(orderId);
+        order.setDaycare(new DaycareService().daycareById(daycareId));
         dbFirestore.collection("orders").document(order.getDocumentId()).set(order);
-        collectionsApiFuture = dbFirestore.collection("orders").document(order.getDocumentId()).set(order);
-        return collectionsApiFuture.get().getUpdateTime().toString();
+        DocumentReference daycareRef = dbFirestore.collection("daycares").document(daycareId);
+        dbFirestore.collection("orders")
+                .document(order.getDocumentId())
+                .update("daycare", daycareRef);
+        return order;
     }
 
 
@@ -91,31 +96,17 @@ public class OrderService {
     }
 
     public Order addOrderLine(String documentId, OrderLine orderLine) throws ExecutionException, InterruptedException {
+        Order currentOrder = this.orderById(documentId);
+        currentOrder.addOrderLine(orderLine);
+        dbFirestore.collection("orders").document(currentOrder.getDocumentId()).set(currentOrder);
+        return currentOrder;
+    }
 
-        DocumentReference orderRef = dbFirestore.collection("orders").document(documentId);
-        // Récupérez le document actuel
-        DocumentSnapshot document = orderRef.get().get();
-        if (document.exists()) {
-            Order order = new Order();
-            order.setDocumentId(document.getId());
-            // Remarque : vous devrez peut-être ajuster le nom du champ dans votre modèle Order
 
-            // Trouver la Daycare en utilisant la référence depuis Firebase et la définir sur l'objet JAVA Daycare
-            DocumentReference documentReferenceDaycare = (DocumentReference) document.get("daycare");
-            if (documentReferenceDaycare != null) {
-                ApiFuture<DocumentSnapshot> futureDaycare = documentReferenceDaycare.get();
-                DocumentSnapshot daycareDoc = futureDaycare.get();
-
-                if (daycareDoc.exists()) {
-                    // Convertir le DocumentSnapshot en objet Daycare et le définir sur l'objet Order
-                    Daycare daycare = daycareDoc.toObject(Daycare.class);
-                    order.setDaycare(daycare);
-                }
-            }
-            return order;
-        } else {
-            // Le document n'existe pas
-            return null;
-        }
+    public Order removeOrderLine(String documentId, String orderLineId) throws ExecutionException, InterruptedException {
+        Order currentOrder = this.orderById(documentId);
+        currentOrder.removeOrderLine(orderLineId);
+        dbFirestore.collection("orders").document(currentOrder.getDocumentId()).set(currentOrder);
+        return currentOrder;
     }
 }

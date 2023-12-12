@@ -42,14 +42,8 @@ public class OrderController {
     }
 
     @MutationMapping
-    public Order updateOrder(@Argument Daycare daycare,
-                                 @Argument List<OrderLine> orderLines) throws ExecutionException, InterruptedException {
-        Order order = new Order();
-        order.setDocumentId(UUID.randomUUID().toString());
-        order.setDaycare(daycare);
-        order.setOrderLines(orderLines);
-        service.updateOrder(order);
-        return order;
+    public Order updateOrder(@Argument String orderId,@Argument String daycareId) throws ExecutionException, InterruptedException {
+        return service.updateOrder(orderId,daycareId);
     }
 
     @MutationMapping
@@ -57,6 +51,11 @@ public class OrderController {
         return service.addOrderLine(documentId,orderLine);
     }
 
+
+    @MutationMapping
+    public Order removeOrderLine(@Argument String documentId, @Argument String orderLineId) throws ExecutionException, InterruptedException {
+        return service.removeOrderLine(documentId,orderLineId);
+    }
 
 
 
