@@ -32,21 +32,19 @@ public class ArticleController {
 
 
     @MutationMapping
-    public Article createArticle(@Argument Article article) throws ExecutionException, InterruptedException {
-        System.out.println(article.getName());
+    public String createArticle(@Argument String name, @Argument int reserve,@Argument String storageType) throws ExecutionException, InterruptedException {
+        Article article = new Article();
         article.setDocumentId(UUID.randomUUID().toString());
-        service.createArticle(article);
-        return article;
+        article.setName(name);
+        article.setReserve(reserve);
+        article.setStorageType(storageType);
+        return service.createArticle(article);
     }
 
     @MutationMapping
-    public Article updateArticle(@Argument Article article) throws ExecutionException, InterruptedException {
-        service.updateArticle(article);
-        return article;
+    public Article updateArticle(@Argument String articleId, @Argument String name, @Argument int reserve,@Argument String storageType) throws ExecutionException, InterruptedException {
+        return service.updateArticle(articleId,name,reserve,storageType);
     }
-
-
-
 
     @MutationMapping
     public String deleteArticle(@Argument String articleId){

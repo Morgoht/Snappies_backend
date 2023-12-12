@@ -6,6 +6,7 @@ import com.google.firebase.cloud.FirestoreClient;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firestore.v1.Document;
+import org.example.controllers.OrderLineController;
 import org.example.models.Daycare;
 import org.example.models.Order;
 import org.example.models.OrderLine;
@@ -19,21 +20,15 @@ import java.util.concurrent.ExecutionException;
 @Service
 public class OrderService {
     Firestore dbFirestore = FirestoreClient.getFirestore();
+    CollectionReference ordersCollection = dbFirestore.collection("orders");
 
     public Order setOrderFromDocumentSnapshot(DocumentSnapshot doc) throws ExecutionException, InterruptedException {
         if (doc.exists()) {
-            //Create Order and set ID
             Order order = new Order();
             order.setDocumentId(doc.getId());
-
-            //Instanciate required Services
             DaycareService daycareService = new DaycareService();
             OrderLineService orderLineService = new OrderLineService();
-
-            //Find the daycare by the reference from Firebase and set the Order.Daycare
             order.setDaycare(daycareService.daycareById(UtilService.findByReference(doc,"daycare")));
-
-            //Find and fill the Orderlines table with Orderlines
             for (String id: UtilService.listOfReferences(doc,"orderLines")
             ) {
                 order.addOrderLine(orderLineService.orderLineById(id));
@@ -45,7 +40,7 @@ public class OrderService {
     }
 
     public Order orderById(String documentId) throws ExecutionException, InterruptedException {
-        DocumentReference documentReference = dbFirestore.collection("orders").document(documentId);
+        DocumentReference documentReference = ordersCollection.document(documentId);
         ApiFuture<DocumentSnapshot> future = documentReference.get();
         DocumentSnapshot document = future.get();
         return setOrderFromDocumentSnapshot(document);
@@ -53,13 +48,9 @@ public class OrderService {
 
 
     public List<Order> allOrders() throws ExecutionException, InterruptedException {
-        CollectionReference collection = dbFirestore.collection("orders");
-
-        // Récupérer tous les documents de la collection "orders"
+        CollectionReference collection = ordersCollection;
         ApiFuture<QuerySnapshot> querySnapshot = collection.get();
         QuerySnapshot snapshot = querySnapshot.get();
-
-        // Initialiser la liste d'orders
         List<Order> orders = new ArrayList<>();
 
         for (QueryDocumentSnapshot document : snapshot.getDocuments()) {
@@ -69,50 +60,46 @@ public class OrderService {
         return orders;
     }
 
-    public Order createOrder(Order order, String daycareId) throws ExecutionException, InterruptedException {
-        ApiFuture<WriteResult> collectionsApiFuture = dbFirestore.collection("orders").document(order.getDocumentId()).set(order);
+    public String createOrder(Order order, String daycareId) throws ExecutionException, InterruptedException {
+        DocumentReference docRef = ordersCollection.document(order.getDocumentId());
+        ApiFuture<WriteResult> collectionsApiFuture = docRef.set(order);
         DocumentReference daycareRef = dbFirestore.collection("daycares").document(daycareId);
-        dbFirestore.collection("orders")
-                .document(order.getDocumentId())
-                .update("daycare", daycareRef);
+        docRef.update("daycare", daycareRef);
 
-        return order;
+        return collectionsApiFuture.get().getUpdateTime().toString();
     }
 
     public Order updateOrder(String orderId, String daycareId) throws ExecutionException, InterruptedException {
         Order order = this.orderById(orderId);
+        DocumentReference docRef = ordersCollection.document(order.getDocumentId());
         order.setDaycare(new DaycareService().daycareById(daycareId));
         DocumentReference daycareRef = dbFirestore.collection("daycares").document(daycareId);
-        dbFirestore.collection("orders")
-                .document(orderId)
-                .update("daycare", daycareRef);
+        docRef.update("daycare", daycareRef);
         return order;
     }
 
-
     public String deleteOrder(String documentId){
-        dbFirestore.collection("orders").document(documentId).delete();
+        ordersCollection.document(documentId).delete();
         return "Successfully deleted order";
     }
 
-    public Order addOrderLine(String documentId, OrderLine orderLine) throws ExecutionException, InterruptedException {
+    public boolean addOrderLine(String documentId, OrderLine orderLine) throws ExecutionException, InterruptedException {
         Order order = this.orderById(documentId);
-        order.addOrderLine(orderLine);
-        DocumentReference orderLineRef = dbFirestore.collection("orderLines").document(orderLine.getDocumentId());
-        dbFirestore.collection("orders")
+        new OrderLineController(new OrderLineService()).createOrderLine(orderLine.getArticle().getDocumentId(),orderLine.getQuantity());
+        DocumentReference orderLineRef = dbFirestore.collection("orders").document(orderLine.getDocumentId());
+        ordersCollection
                 .document(documentId)
                 .update("orderLines", FieldValue.arrayUnion(orderLineRef));
-        return order;
+        return order.addOrderLine(orderLine);
     }
 
 
-    public Order removeOrderLine(String documentId, String orderLineId) throws ExecutionException, InterruptedException {
+    public boolean removeOrderLine(String documentId, String orderLineId) throws ExecutionException, InterruptedException {
         Order order = this.orderById(documentId);
-        order.removeOrderLine(orderLineId);
         DocumentReference orderLineRef = dbFirestore.collection("orderLines").document(orderLineId);
-        dbFirestore.collection("orders")
+        ordersCollection
                 .document(documentId)
                 .update("orderLines", FieldValue.arrayRemove(orderLineRef));
-        return order;
+        return order.removeOrderLine(orderLineId);
     }
 }

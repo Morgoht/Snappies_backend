@@ -10,6 +10,7 @@ import java.util.List;
 public class DeliveryRound {
     private String documentId;
     private String name;
+    private User driver;
     private List<Delivery> deliveries = new ArrayList<>();
     private boolean roundEnded;
 

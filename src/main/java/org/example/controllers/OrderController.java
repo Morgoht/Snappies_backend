@@ -4,6 +4,7 @@ import org.example.models.Delivery;
 import org.example.models.OrderLine;
 import org.example.models.Daycare;
 import org.example.models.Order;
+import org.example.services.ArticleService;
 import org.example.services.OrderLineService;
 import org.example.services.OrderService;
 import org.mockito.internal.matchers.Or;
@@ -35,11 +36,10 @@ public class OrderController {
 
 
     @MutationMapping
-    public Order createOrder(@Argument String daycareId) throws ExecutionException, InterruptedException {
+    public String createOrder(@Argument String daycareId) throws ExecutionException, InterruptedException {
         Order order = new Order();
         order.setDocumentId(UUID.randomUUID().toString());
-        service.createOrder(order, daycareId);
-        return order;
+        return service.createOrder(order, daycareId);
     }
 
     @MutationMapping
@@ -48,14 +48,16 @@ public class OrderController {
     }
 
     @MutationMapping
-    public Order addOrderLine(@Argument String documentId, @Argument String articleId, @Argument int quantity) throws ExecutionException, InterruptedException {
-        OrderLine newOrderLine = new OrderLineController(new OrderLineService()).createOrderLine(articleId,quantity);
-        return service.addOrderLine(documentId,newOrderLine);
+    public boolean addOrderLine(@Argument String orderId, @Argument String articleId, @Argument int quantity) throws ExecutionException, InterruptedException {
+        OrderLine newOrderLine = new OrderLine();
+        newOrderLine.setArticle(new ArticleService().articleById(articleId));
+        newOrderLine.setQuantity(quantity);
+        return service.addOrderLine(orderId,newOrderLine);
     }
 
 
     @MutationMapping
-    public Order removeOrderLine(@Argument String documentId, @Argument String orderLineId) throws ExecutionException, InterruptedException {
+    public boolean removeOrderLine(@Argument String documentId, @Argument String orderLineId) throws ExecutionException, InterruptedException {
         return service.removeOrderLine(documentId,orderLineId);
     }
 

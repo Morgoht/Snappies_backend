@@ -3,8 +3,6 @@ package org.example.services;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
-import org.example.models.Article;
-import org.example.models.Order;
 import org.example.models.OrderLine;
 
 import org.springframework.stereotype.Service;
@@ -54,13 +52,13 @@ public class OrderLineService {
         return orderLineList;
     }
 
-    public OrderLine createOrderLine(OrderLine orderLine, String articleId) throws ExecutionException, InterruptedException {
+    public String createOrderLine(OrderLine orderLine, String articleId) throws ExecutionException, InterruptedException {
 
         DocumentReference docRef = dbFirestore.collection("orderLines").document(orderLine.getDocumentId());
-        docRef.set(orderLine);
+        ApiFuture<WriteResult> collectionsApiFuture = docRef.set(orderLine);
         DocumentReference articleRef = dbFirestore.collection("articles").document(articleId);
         docRef.update("article", articleRef);
-        return orderLine;
+        return collectionsApiFuture.get().getUpdateTime().toString();
 
     }
 
