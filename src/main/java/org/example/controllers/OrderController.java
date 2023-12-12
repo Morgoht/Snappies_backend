@@ -4,6 +4,7 @@ import org.example.models.Delivery;
 import org.example.models.OrderLine;
 import org.example.models.Daycare;
 import org.example.models.Order;
+import org.example.services.OrderLineService;
 import org.example.services.OrderService;
 import org.mockito.internal.matchers.Or;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -47,8 +48,9 @@ public class OrderController {
     }
 
     @MutationMapping
-    public Order addOrderLine(@Argument String documentId, @Argument OrderLine orderLine) throws ExecutionException, InterruptedException {
-        return service.addOrderLine(documentId,orderLine);
+    public Order addOrderLine(@Argument String documentId, @Argument String articleId, @Argument int quantity) throws ExecutionException, InterruptedException {
+        OrderLine newOrderLine = new OrderLineController(new OrderLineService()).createOrderLine(articleId,quantity);
+        return service.addOrderLine(documentId,newOrderLine);
     }
 
 

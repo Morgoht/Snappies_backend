@@ -3,6 +3,8 @@ package org.example.services;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firestore.v1.Document;
 import org.example.models.Daycare;
 import org.example.models.Order;
@@ -32,7 +34,7 @@ public class OrderService {
             order.setDaycare(daycareService.daycareById(UtilService.findByReference(doc,"daycare")));
 
             //Find and fill the Orderlines table with Orderlines
-            for (String id: UtilService.listOfReferences(doc,"orderLine")
+            for (String id: UtilService.listOfReferences(doc,"orderLines")
             ) {
                 order.addOrderLine(orderLineService.orderLineById(id));
             }
@@ -67,24 +69,22 @@ public class OrderService {
         return orders;
     }
 
-    public String createOrder(Order order, String daycareId) throws ExecutionException, InterruptedException {
+    public Order createOrder(Order order, String daycareId) throws ExecutionException, InterruptedException {
         ApiFuture<WriteResult> collectionsApiFuture = dbFirestore.collection("orders").document(order.getDocumentId()).set(order);
         DocumentReference daycareRef = dbFirestore.collection("daycares").document(daycareId);
-        System.out.println(daycareRef);
         dbFirestore.collection("orders")
                 .document(order.getDocumentId())
                 .update("daycare", daycareRef);
 
-        return collectionsApiFuture.get().getUpdateTime().toString();
+        return order;
     }
 
     public Order updateOrder(String orderId, String daycareId) throws ExecutionException, InterruptedException {
         Order order = this.orderById(orderId);
         order.setDaycare(new DaycareService().daycareById(daycareId));
-        dbFirestore.collection("orders").document(order.getDocumentId()).set(order);
         DocumentReference daycareRef = dbFirestore.collection("daycares").document(daycareId);
         dbFirestore.collection("orders")
-                .document(order.getDocumentId())
+                .document(orderId)
                 .update("daycare", daycareRef);
         return order;
     }
@@ -96,17 +96,23 @@ public class OrderService {
     }
 
     public Order addOrderLine(String documentId, OrderLine orderLine) throws ExecutionException, InterruptedException {
-        Order currentOrder = this.orderById(documentId);
-        currentOrder.addOrderLine(orderLine);
-        dbFirestore.collection("orders").document(currentOrder.getDocumentId()).set(currentOrder);
-        return currentOrder;
+        Order order = this.orderById(documentId);
+        order.addOrderLine(orderLine);
+        DocumentReference orderLineRef = dbFirestore.collection("orderLines").document(orderLine.getDocumentId());
+        dbFirestore.collection("orders")
+                .document(documentId)
+                .update("orderLines", FieldValue.arrayUnion(orderLineRef));
+        return order;
     }
 
 
     public Order removeOrderLine(String documentId, String orderLineId) throws ExecutionException, InterruptedException {
-        Order currentOrder = this.orderById(documentId);
-        currentOrder.removeOrderLine(orderLineId);
-        dbFirestore.collection("orders").document(currentOrder.getDocumentId()).set(currentOrder);
-        return currentOrder;
+        Order order = this.orderById(documentId);
+        order.removeOrderLine(orderLineId);
+        DocumentReference orderLineRef = dbFirestore.collection("orderLines").document(orderLineId);
+        dbFirestore.collection("orders")
+                .document(documentId)
+                .update("orderLines", FieldValue.arrayRemove(orderLineRef));
+        return order;
     }
 }

@@ -54,16 +54,26 @@ public class OrderLineService {
         return orderLineList;
     }
 
-    public String createOrderLine(OrderLine orderLine) throws ExecutionException, InterruptedException {
-        ApiFuture<WriteResult> collectionsApiFuture = dbFirestore.collection("orderLine").document(orderLine.getDocumentId()).set(orderLine);
-        return collectionsApiFuture.get().getUpdateTime().toString();
+    public OrderLine createOrderLine(OrderLine orderLine, String articleId) throws ExecutionException, InterruptedException {
+
+        DocumentReference docRef = dbFirestore.collection("orderLines").document(orderLine.getDocumentId());
+        docRef.set(orderLine);
+        DocumentReference articleRef = dbFirestore.collection("articles").document(articleId);
+        docRef.update("article", articleRef);
+        return orderLine;
+
     }
 
-    public String updateOrderLine(OrderLine orderLine) throws ExecutionException, InterruptedException {
-        ApiFuture<WriteResult> collectionsApiFuture;
-        dbFirestore.collection("orderLine").document(orderLine.getDocumentId()).set(orderLine);
-        collectionsApiFuture = dbFirestore.collection("articles").document(orderLine.getDocumentId()).set(orderLine);
-        return collectionsApiFuture.get().getUpdateTime().toString();
+    public OrderLine updateOrderLine(String orderLineId,String articleId,int quantity) throws ExecutionException, InterruptedException {
+        OrderLine orderLine = this.orderLineById(orderLineId);
+        orderLine.setQuantity(quantity);
+        orderLine.setArticle(new ArticleService().articleById(articleId));
+        DocumentReference docRef = dbFirestore.collection("orderLines").document(orderLineId);
+        DocumentReference articleRef = dbFirestore.collection("articles").document(articleId);
+        docRef.update("quantity",quantity);
+        docRef.update("article", articleRef);
+        return orderLine;
+
     }
 
 

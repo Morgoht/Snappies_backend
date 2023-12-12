@@ -36,11 +36,11 @@ type Mutation {
     createOrder(daycareId: ID!): Order
     updateOrder(orderId: ID!, daycareId: ID!): Order
     deleteOrder(documentId: ID!): String
-    addOrderLine(documentId: ID!, orderLineInput: OrderLineInput!): OrderLine
+    addOrderLine(documentId: ID!, articleId: ID!, quantity: Int): OrderLine
     removeOrderLine(documentId: ID!,orderLineId:ID!):OrderLine
 
     createOrderLine(articleId: ID!, quantity: Int!): OrderLine
-    updateOrderLine(articleId: ID, quantity: Int, orderLineId: ID!): OrderLine
+    updateOrderLine(orderLineId: ID!articleId: ID, quantity: Int): OrderLine
     deleteOrderLine(documentId: ID!): String
 
     createDelivery(orderId: ID!, driverId: ID!): Delivery
