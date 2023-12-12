@@ -7,6 +7,7 @@ import org.example.models.*;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -22,7 +23,13 @@ public class ArticleService {
         DocumentReference documentReference = dbFirestore.collection("articles").document(documentId);
         ApiFuture<DocumentSnapshot> future = documentReference.get();
         DocumentSnapshot document = future.get();
-        Article article = new Article();
+        Article article;
+        if(document.exists()){
+            article = document.toObject(Article.class);
+            article.setDocumentId(document.getId());
+            return article;
+        }
+        /*Article article = new Article();
 
         article.setDocumentId(document.getId());
 
@@ -34,8 +41,8 @@ public class ArticleService {
         ArticleType type = typeDoc.toObject(ArticleType.class);
 
         article.setArticleType(type);
-
-        return article;
+        */
+        return null;
 
     }
 
@@ -43,12 +50,21 @@ public class ArticleService {
     public List<Article> allArticles() throws ExecutionException, InterruptedException {
         CollectionReference collection = dbFirestore.collection("articles");
         ApiFuture<QuerySnapshot> querySnapshot = collection.get();
-        List<Article> articleList = new ArrayList<>();
+        List<Article> arrayList = new ArrayList<>();
+        for (DocumentSnapshot doc : querySnapshot.get().getDocuments()) {
+            Article article = doc.toObject(Article.class);
+            assert article != null;
+            article.setDocumentId(doc.getId());
+            arrayList.add(article);
+            arrayList.add(article);
+        }
+        /*
         for (DocumentSnapshot doc : querySnapshot.get().getDocuments()) {
             Article article = new Article();
             article.setDocumentId(doc.getId());
 
             //Find the ArticleType using the reference ID from Firebase and set it to the JAVA ArticleType
+
             DocumentReference documentReferenceArticleType = (DocumentReference) doc.get("articleType");
             assert documentReferenceArticleType != null;
             ApiFuture<DocumentSnapshot> futureArticleType = documentReferenceArticleType.get();
@@ -56,11 +72,8 @@ public class ArticleService {
             ArticleType type = typeDoc.toObject(ArticleType.class);
 
             article.setArticleType(type);
-           articleList.add(article);
-
-        }
-
-        return articleList;
+             */
+        return arrayList;
     }
 
     public String createArticle(Article article) throws ExecutionException, InterruptedException {
@@ -69,11 +82,26 @@ public class ArticleService {
     }
 
     public String updateArticle(Article article) throws ExecutionException, InterruptedException {
-        ApiFuture<WriteResult> collectionsApiFuture;
-            dbFirestore.collection("articles").document(article.getDocumentId()).set(article);
-            collectionsApiFuture = dbFirestore.collection("articles").document(article.getDocumentId()).set(article);
+        Map<String, Object> updates = new HashMap<>();
+
+        if (article.getName() != null) {
+            updates.put("name", article.getName());
+        }
+        if (article.getReserve() != 0) {
+            updates.put("reserve", article.getReserve());
+        }
+        if (article.getStorageType() != null){
+            updates.put("storageType", article.getStorageType());
+        }
+        ApiFuture<WriteResult> collectionsApiFuture = dbFirestore
+                .collection("articles")
+                .document(article.getDocumentId())
+                .update(updates);
+
         return collectionsApiFuture.get().getUpdateTime().toString();
     }
+
+
 
 
     public String deleteArticle(String documentId){

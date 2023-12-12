@@ -1,5 +1,6 @@
 package org.example.controllers;
 
+import org.example.models.Delivery;
 import org.example.models.OrderLine;
 import org.example.models.Daycare;
 import org.example.models.Order;
@@ -26,37 +27,39 @@ public class OrderController {
     }
 
     @QueryMapping
-    public List<Order> allorders() throws ExecutionException, InterruptedException {
+    public List<Order> allOrders() throws ExecutionException, InterruptedException {
         return service.allOrders();
     }
 
 
     @MutationMapping
-    public Order createorder(@Argument List<OrderLine> orderLines, @Argument Daycare daycare) throws ExecutionException, InterruptedException {
-        Order order = new Order();
+    public Order createOrder(@Argument Order order) throws ExecutionException, InterruptedException {
         order.setDocumentId(UUID.randomUUID().toString());
-        order.setOrderLine(orderLines);
-        order.setDaycare(daycare);
         service.createOrder(order);
         return order;
     }
 
     @MutationMapping
-    public Order updateorder(@Argument Daycare daycare,
+    public Order updateOrder(@Argument Daycare daycare,
                                  @Argument List<OrderLine> orderLines) throws ExecutionException, InterruptedException {
         Order order = new Order();
         order.setDocumentId(UUID.randomUUID().toString());
         order.setDaycare(daycare);
-        order.setOrderLine(orderLines);
+        order.setOrderLines(orderLines);
         service.updateOrder(order);
         return order;
+    }
+
+    @MutationMapping
+    public Order addOrderLine(@Argument String documentId, @Argument OrderLine orderLine) throws ExecutionException, InterruptedException {
+        return service.addOrderLine(documentId,orderLine);
     }
 
 
 
 
     @MutationMapping
-    public String deleteorder(@Argument String orderId){
+    public String deleteOrder(@Argument String orderId){
         return service.deleteOrder(orderId);
     }
 

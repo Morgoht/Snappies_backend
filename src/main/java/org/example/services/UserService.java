@@ -7,7 +7,9 @@ import org.example.models.User;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 @Service
@@ -23,6 +25,7 @@ public class UserService {
         User user;
         if(document.exists()){
             user = document.toObject(User.class);
+            user.setDocumentId(document.getId());
             return user;
         }
         return null;
@@ -49,12 +52,41 @@ public class UserService {
     }
 
     public String updateUser(User user) throws ExecutionException, InterruptedException {
-        ApiFuture<WriteResult> collectionsApiFuture = dbFirestore.collection("users").document(user.getDocumentId()).set(user);
+        Map<String, Object> updates = new HashMap<>();
+
+        if (user.getName() != null) {
+            updates.put("name", user.getName());
+        }
+
+        if (user.getLastname() != null) {
+            updates.put("lastname", user.getLastname());
+        }
+
+        if (user.getUsername() != null) {
+            updates.put("username", user.getUsername());
+        }
+
+        if (user.getEmail() != null) {
+            updates.put("email", user.getEmail());
+        }
+
+        if (user.getPassword() != null) {
+            updates.put("password", user.getPassword());
+        }
+
+        if (user.getPhoneNumber() != null) {
+            updates.put("phoneNumber", user.getPhoneNumber());
+        }
+        ApiFuture<WriteResult> collectionsApiFuture = dbFirestore
+                .collection("users")
+                .document(user.getDocumentId())
+                .update(updates);
+
         return collectionsApiFuture.get().getUpdateTime().toString();
     }
 
     public String deleteUser(String documentId){
-        ApiFuture<WriteResult> writeResultApiFuture = dbFirestore.collection("users").document(documentId).delete();
+        dbFirestore.collection("users").document(documentId).delete();
         return "Successfully deleted user";
     }
 }
