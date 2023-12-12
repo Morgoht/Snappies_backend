@@ -33,7 +33,7 @@ type Mutation {
     updateDaycare(daycare: DaycareEditInput): Daycare
     deleteDaycare(documentId: ID!): String
 
-    createOrder(order: OrderInput): Order
+    createOrder(daycareId: ID!): Order
     updateOrder(articles: [OrderLineInput], daycare: DaycareInput): Order
     deleteOrder(documentId: ID!): String
 

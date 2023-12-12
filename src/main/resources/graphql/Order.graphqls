@@ -5,8 +5,8 @@ type Order {
 }
 
 input OrderInput {
-    orderLines: [OrderLineInput]!
-    daycare: DaycareInputById!
+    orderLines: [ID!]!
+    daycare: ID!
 }
 
 input OrderEditInput {
