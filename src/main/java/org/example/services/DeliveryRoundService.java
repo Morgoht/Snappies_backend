@@ -16,7 +16,7 @@ import java.util.concurrent.ExecutionException;
 public class DeliveryRoundService {
     Firestore dbFirestore = FirestoreClient.getFirestore();
 
-     CollectionReference deliveryRoundsCollection = dbFirestore.collection("deliveryRounds");;
+     CollectionReference deliveryRoundsCollection = dbFirestore.collection("deliveryRounds");
 
     public DeliveryRound setDeliveryRoundFromDocumentSnapshot(DocumentSnapshot doc) throws ExecutionException, InterruptedException {
         if (doc.exists()) {
@@ -65,25 +65,24 @@ public class DeliveryRoundService {
     public String createDeliveryRound(DeliveryRound deliveryRound, String name, String driverId) throws ExecutionException, InterruptedException {
         DocumentReference docRef = deliveryRoundsCollection.document(deliveryRound.getDocumentId());
         ApiFuture<WriteResult> collectionsApiFuture = docRef.set(deliveryRound);
+        DocumentReference userReference =  dbFirestore.collection("users").document(driverId);
         docRef.update("name", name);
-        docRef.update("driver", driverId);
+        docRef.update("driver", userReference);
 
         return collectionsApiFuture.get().getUpdateTime().toString();
     }
 
     public DeliveryRound updateDeliveryRound(String deliveryRoundId, String name, String driverId) throws ExecutionException, InterruptedException {
+        DocumentReference docRef = deliveryRoundsCollection.document(deliveryRoundId);
         DeliveryRound deliveryRound = this.deliveryRoundById(deliveryRoundId);
         deliveryRound.setName(name);
         deliveryRound.setDriver(new UserService().userById(driverId));
+        DocumentReference userReference =  dbFirestore.collection("users").document(driverId);
         if(name!=null) {
-            deliveryRoundsCollection
-                    .document(deliveryRoundId)
-                    .update("name", name);
+            docRef.update("name", name);
         }
         if(driverId!=null) {
-            deliveryRoundsCollection
-                    .document(deliveryRound.getDocumentId())
-                    .update("driver", driverId);
+            docRef.update("driver", userReference);
         }
         return deliveryRound;
     }
@@ -113,7 +112,7 @@ public class DeliveryRoundService {
 
     public boolean addDelivery(String documentId, String deliveryId) throws ExecutionException, InterruptedException {
         DeliveryRound deliveryRound = this.deliveryRoundById(documentId);
-        DocumentReference deliveryRef = deliveryRoundsCollection.document(deliveryRound.getDocumentId());
+        DocumentReference deliveryRef = dbFirestore.collection("deliveries").document(deliveryId);
         deliveryRoundsCollection
                 .document(documentId)
                 .update("deliveries", FieldValue.arrayUnion(deliveryRef));

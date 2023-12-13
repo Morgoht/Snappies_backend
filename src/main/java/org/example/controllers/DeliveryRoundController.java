@@ -59,8 +59,8 @@ public class DeliveryRoundController {
     }
 
     @MutationMapping
-    public boolean addDelivery(@Argument String documentId, @Argument String deliveryId) throws ExecutionException, InterruptedException {
-        return service.addDelivery(documentId,deliveryId);
+    public boolean addDelivery(@Argument String deliveryRoundId, @Argument String deliveryId) throws ExecutionException, InterruptedException {
+        return service.addDelivery(deliveryRoundId,deliveryId);
     }
 
     @MutationMapping

@@ -34,7 +34,7 @@ public class OrderLineController {
 
 
     @MutationMapping
-    public String createOrderLine(@Argument String articleId, @Argument int quantity) throws ExecutionException, InterruptedException {
+    public String createOrderLine(@Argument String articleId, @Argument double quantity) throws ExecutionException, InterruptedException {
         OrderLine orderLine = new OrderLine();
         orderLine.setDocumentId(UUID.randomUUID().toString());
         orderLine.setQuantity(quantity);
@@ -42,14 +42,14 @@ public class OrderLineController {
     }
 
     @MutationMapping
-    public OrderLine updateOrderLine(@Argument String orderLineId,@Argument String articleId, @Argument int quantity) throws ExecutionException, InterruptedException {
+    public OrderLine updateOrderLine(@Argument String orderLineId,@Argument String articleId, @Argument double quantity) throws ExecutionException, InterruptedException {
         return service.updateOrderLine(orderLineId, articleId, quantity);
     }
 
 
 
     @MutationMapping
-    public String deleteOrderLine(@Argument String orderLineId){
+    public String deleteOrderLine(@Argument String orderLineId) throws ExecutionException, InterruptedException {
         return service.deleteOrderLine(orderLineId);
     }
 

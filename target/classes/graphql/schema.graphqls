@@ -36,18 +36,18 @@ type Mutation {
     createOrder(daycareId: ID!): String
     updateOrder(orderId: ID!, daycareId: ID!): Order
     deleteOrder(documentId: ID!): String
-    addOrderLine(documentId: ID!, articleId: ID!, quantity: Int): Boolean
+    addOrderLine(orderId: ID!, articleId: ID!, quantity: Float!): Boolean
     removeOrderLine(documentId: ID!,orderLineId:ID!):Boolean
 
-    createOrderLine(articleId: ID!, quantity: Int!): String
-    updateOrderLine(orderLineId: ID!,articleId: ID, quantity: Int): OrderLine
-    deleteOrderLine(documentId: ID!): String
+    createOrderLine(articleId: ID!, quantity: Float!): String
+    updateOrderLine(orderLineId: ID!,articleId: ID, quantity: Float): OrderLine
+    deleteOrderLine(orderLineId: ID!): String
 
     createDelivery(orderId: ID!): String
     updateDelivery(orderId: ID): Delivery
     deleteDelivery(documentId: ID!): String
 
-    createDeliveryRound(name: String, driverId: ID): DeliveryRound
+    createDeliveryRound(name: String!, driverId: ID): String
     updateDeliveryRound(deliveryRoundId: ID!,name: String, driverId: ID,roundEnded: Boolean): DeliveryRound
     deleteDeliveryRound(documentId: ID!): String
     addDelivery(deliveryRoundId: ID!, deliveryId: ID!): Boolean

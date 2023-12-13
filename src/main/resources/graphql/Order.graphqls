@@ -1,6 +1,6 @@
 type Order {
     documentId: ID!
-    orderLines: [OrderLine!]!
+    orderLines: [OrderLine]!
     daycare: Daycare!
 }
 

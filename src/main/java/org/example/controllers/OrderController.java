@@ -48,12 +48,13 @@ public class OrderController {
     }
 
     @MutationMapping
-    public boolean addOrderLine(@Argument String orderId, @Argument String articleId, @Argument int quantity) throws ExecutionException, InterruptedException {
-        OrderLine newOrderLine = new OrderLine();
-        newOrderLine.setArticle(new ArticleService().articleById(articleId));
-        newOrderLine.setQuantity(quantity);
-        return service.addOrderLine(orderId,newOrderLine);
+    public boolean addOrderLine(@Argument String orderId, @Argument String articleId, @Argument double quantity) throws ExecutionException, InterruptedException {
+        OrderLine orderLine = new OrderLine();
+        orderLine.setDocumentId(UUID.randomUUID().toString());
+        orderLine.setQuantity(quantity);
+        return service.addOrderLine(orderId,orderLine,articleId);
     }
+
 
 
     @MutationMapping
