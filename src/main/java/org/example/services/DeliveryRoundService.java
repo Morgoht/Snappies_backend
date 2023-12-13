@@ -33,7 +33,9 @@ public class DeliveryRoundService {
             }
 
             deliveryRound.setRoundEnded((Boolean) doc.get("roundEnded"));
-            deliveryRound.setDriver(new UserService().userById(UtilService.findByReference(doc,"driver")));
+            if(doc.get("driver")!=null) {
+                deliveryRound.setDriver(new UserService().userById(UtilService.findByReference(doc, "driver")));
+            }
             deliveryRound.setName((String) doc.get("name"));
 
             return deliveryRound;
@@ -62,13 +64,14 @@ public class DeliveryRoundService {
         return deliveryRoundList;
     }
 
-    public String createDeliveryRound(DeliveryRound deliveryRound, String name, String driverId) throws ExecutionException, InterruptedException {
+    public String createDeliveryRound(DeliveryRound deliveryRound, String driverId) throws ExecutionException, InterruptedException {
         DocumentReference docRef = deliveryRoundsCollection.document(deliveryRound.getDocumentId());
         ApiFuture<WriteResult> collectionsApiFuture = docRef.set(deliveryRound);
-        DocumentReference userReference =  dbFirestore.collection("users").document(driverId);
-        docRef.update("name", name);
-        docRef.update("driver", userReference);
-
+        docRef.update("name", deliveryRound.getName());
+        if(driverId!=null) {
+            DocumentReference userReference = dbFirestore.collection("users").document(driverId);
+            docRef.update("driver", userReference);
+        }
         return collectionsApiFuture.get().getUpdateTime().toString();
     }
 
@@ -107,6 +110,10 @@ public class DeliveryRoundService {
         deliveryRoundsCollection
                 .document(documentId)
                 .update("roundEnded", false);
+        for (Delivery d: deliveryRound.getDeliveries()
+             ) {
+            new DeliveryService().resetDelivery(d.getDocumentId());
+        }
         return "Reset the round status";
     }
 

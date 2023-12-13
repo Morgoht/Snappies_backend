@@ -8,6 +8,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firestore.v1.Document;
 import org.example.controllers.OrderLineController;
 import org.example.models.Daycare;
+import org.example.models.Delivery;
 import org.example.models.Order;
 import org.example.models.OrderLine;
 import org.mockito.internal.matchers.Or;
@@ -174,4 +175,12 @@ public class OrderService {
             } else
                 return false;
         }
+
+    public void resetOrder(String orderId) throws ExecutionException, InterruptedException {
+        Order order = this.orderById(orderId);
+        for (OrderLine ol: order.getOrderLines()
+             ) {
+            new OrderLineService().resetOrderLine(ol.getDocumentId());
+        }
+    }
 }

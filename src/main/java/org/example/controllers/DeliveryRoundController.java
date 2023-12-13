@@ -37,7 +37,8 @@ public class DeliveryRoundController {
     public String createDeliveryRound(@Argument String name, @Argument String driverId) throws ExecutionException, InterruptedException {
         DeliveryRound deliveryRound = new DeliveryRound();
         deliveryRound.setDocumentId(UUID.randomUUID().toString());
-        return service.createDeliveryRound(deliveryRound,name, driverId);
+        deliveryRound.setName(name);
+        return service.createDeliveryRound(deliveryRound, driverId);
     }
 
     @MutationMapping

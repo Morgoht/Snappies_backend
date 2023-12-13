@@ -64,6 +64,7 @@ public class DeliveryService {
         return collectionsApiFuture.get().getUpdateTime().toString();
     }
 
+
     public Delivery updateDelivery(String deliveryId, String orderId) throws ExecutionException, InterruptedException {
         Delivery delivery = this.deliveryById(deliveryId);
         delivery.setOrder(new OrderService().orderById(orderId));
@@ -73,11 +74,27 @@ public class DeliveryService {
         return delivery;
     }
 
+    public void resetDelivery(String deliveryId) throws ExecutionException, InterruptedException {
+        Delivery delivery = this.deliveryById(deliveryId);
+        delivery.setDelivered(false);
+        deliveriesCollection
+                .document(deliveryId)
+                .update("delivered", false);
+        new OrderService().resetOrder(delivery.getOrder().getDocumentId());
+    }
+
+    public void closeDelivery(String deliveryId) throws ExecutionException, InterruptedException {
+        Delivery delivery = this.deliveryById(deliveryId);
+        delivery.setDelivered(true);
+        deliveriesCollection
+                .document(deliveryId)
+                .update("delivered", true);
+    }
+
 
     public String deleteDelivery(String documentId){
         ApiFuture<WriteResult> writeResultApiFuture = deliveriesCollection.document(documentId).delete();
         return "Successfully deleted delivery";
     }
-
 
 }

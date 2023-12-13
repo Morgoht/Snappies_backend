@@ -19,4 +19,5 @@ public class Order {
         OrderLine toRemove = orderLines.stream().filter(e->e.getDocumentId().equals(orderLineId)).findFirst().get();
         return orderLines.remove(toRemove);
     }
+
 }

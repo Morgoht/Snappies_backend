@@ -43,7 +43,7 @@ public class OrderLineController {
 
     @MutationMapping
     public OrderLine updateOrderLine(@Argument String orderLineId,@Argument String articleId, @Argument double quantity) throws ExecutionException, InterruptedException {
-        return service.updateOrderLine(orderLineId, articleId, quantity);
+        return service.updateOrderLine(orderLineId, quantity);
     }
 
 

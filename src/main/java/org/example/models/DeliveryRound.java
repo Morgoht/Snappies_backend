@@ -15,7 +15,6 @@ public class DeliveryRound {
     private boolean roundEnded;
 
 
-
     public boolean addDelivery(Delivery delivery){
         return deliveries.add(delivery);
     }
@@ -24,4 +23,7 @@ public class DeliveryRound {
         Delivery toRemove = deliveries.stream().filter(e->e.getDocumentId().equals(deliveryId)).findFirst().get();
         return deliveries.remove(toRemove);
     }
+
+
+
 }

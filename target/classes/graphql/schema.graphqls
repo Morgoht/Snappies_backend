@@ -40,7 +40,7 @@ type Mutation {
     removeOrderLine(documentId: ID!,orderLineId:ID!):Boolean
 
     createOrderLine(articleId: ID!, quantity: Float!): String
-    updateOrderLine(orderLineId: ID!,articleId: ID, quantity: Float): OrderLine
+    updateOrderLine(orderLineId: ID!, quantity: Float!): OrderLine
     deleteOrderLine(orderLineId: ID!): String
 
     createDelivery(orderId: ID!): String

@@ -2,7 +2,7 @@ type DeliveryRound {
     documentId: ID!
     name: String!
     deliveries: [Delivery!]!
-    driver: User!
+    driver: User
     roundEnded: Boolean
 }
 

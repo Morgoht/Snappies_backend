@@ -6,11 +6,15 @@ import com.google.firebase.cloud.FirestoreClient;
 import org.example.models.Article;
 import org.example.models.OrderLine;
 
+import org.example.models.Update;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+
+import static javax.swing.JOptionPane.showMessageDialog;
 
 @Service
 public class OrderLineService {
@@ -68,18 +72,42 @@ public class OrderLineService {
 
     }
 
-    public OrderLine updateOrderLine(String orderLineId,String articleId,double quantity) throws ExecutionException, InterruptedException {
+    public OrderLine updateOrderLine(String orderLineId,double quantity) throws ExecutionException, InterruptedException {
         OrderLine orderLine = this.orderLineById(orderLineId);
+        double backupQuantity = orderLine.getQuantity();
         orderLine.setQuantity(quantity);
-        orderLine.setArticle(new ArticleService().articleById(articleId));
         DocumentReference docRef = dbFirestore.collection("orderLines").document(orderLineId);
-        DocumentReference articleRef = dbFirestore.collection("articles").document(articleId);
         docRef.update("quantity",quantity);
-        docRef.update("article", articleRef);
+        createOrderLineBackup(orderLineId,backupQuantity,quantity);
+        showMessageDialog(null,"Updating order with ID :"+orderLineId+"\n quantity before :"+backupQuantity+"\n quantity after :"+quantity);
         return orderLine;
+        //Create a new object of type Change in the collection changes saving the orderLineId, the original quantity and the new quantity
 
     }
 
+    public void createOrderLineBackup(String orderlineId, double backupQuantity, double newQuantity) throws ExecutionException, InterruptedException {
+        Update update = new Update();
+        update.setDocumentId(orderlineId+"Updated");
+        update.setUpdatedOrderId(orderlineId);
+        update.setBackupQuantity(backupQuantity);
+        update.setNewQuantity(newQuantity);
+        DocumentReference docRef = dbFirestore.collection("orderLineUpdates").document(update.getDocumentId());
+        ApiFuture<WriteResult> collectionsApiFuture = docRef.set(update);
+        collectionsApiFuture.get();
+    }
+
+    public void resetOrderLine(String orderlineId) throws ExecutionException, InterruptedException {
+        DocumentReference docRef = dbFirestore.collection("orderLineUpdates").document(orderlineId+"Updated");
+        ApiFuture<DocumentSnapshot> future = docRef.get();
+        DocumentSnapshot document = future.get();
+        double backupQuantity;
+        if(document.get("quantity").getClass().equals(Long.class)){
+            backupQuantity= ((Long)document.get("quantity")).doubleValue();
+        }else{
+            backupQuantity =  (Double) document.get("backupQuantity");
+        }
+        updateOrderLine(orderlineId,backupQuantity);
+    }
 
     public String deleteOrderLine(String documentId) throws ExecutionException, InterruptedException {
         ApiFuture<WriteResult> writeResult = dbFirestore.collection("orderLines").document(documentId).delete();
