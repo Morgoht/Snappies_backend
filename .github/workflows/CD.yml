@@ -43,7 +43,7 @@ jobs:
         with:
           name: Snappies_backend
 
-      - name: Deploy Snappies backend to Azure Web App
+      - name: Deploy Snappies backend app to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
