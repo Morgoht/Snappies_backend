@@ -27,7 +27,7 @@ jobs:
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
         with:
-          name: Snappies_backend
+          name: Snappies_backend_prod
           path: '${{ github.workspace }}/target/*.jar'
 
   deploy:
