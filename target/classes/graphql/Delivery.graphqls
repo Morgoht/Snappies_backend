@@ -1,0 +1,15 @@
+type Delivery {
+    documentId: ID!
+    order: Order!
+    delivered: Boolean
+}
+
+input DeliveryInput {
+    driverId: ID!
+    delivered: Boolean
+}
+
+input DeliveryEditInput {
+    driverId: ID!
+    delivered: Boolean
+}

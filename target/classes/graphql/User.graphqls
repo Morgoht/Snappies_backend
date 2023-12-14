@@ -1,0 +1,28 @@
+type User {
+    documentId: ID!
+    name: String!
+    lastname: String!
+    username: String!
+    email: String!
+    password: String!
+    phoneNumber: String
+}
+
+input UserInput{
+    name: String!
+    lastname: String!
+    username: String!
+    email: String!
+    password: String!
+    phoneNumber: String
+}
+
+input UserEditInput {
+    documentId: String!
+    name: String
+    lastname: String
+    username: String
+    email: String
+    password: String
+    phoneNumber: String
+}

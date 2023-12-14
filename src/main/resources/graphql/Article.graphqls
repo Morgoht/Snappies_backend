@@ -1,0 +1,23 @@
+type Article {
+    documentId: ID!
+    name: String!
+    reserve: Int!
+    storageType: String!
+}
+
+input ArticleInput{
+    name: String!
+    reserve: Int!
+    storageType: String!
+}
+
+input ArticleInputById{
+    documentId:ID!
+}
+
+input ArticleEditInput{
+    documentId: ID!
+    name: String
+    reserve: Int
+    storageType: String
+}

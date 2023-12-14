@@ -1,0 +1,24 @@
+type DeliveryRound {
+    documentId: ID!
+    name: String!
+    deliveries: [Delivery!]!
+    driver: User
+    roundEnded: Boolean
+}
+
+input DeliveryRoundInput {
+    documentId: ID!
+    name: String!
+    deliveries: [DeliveryInput!]!
+    driverId: ID!
+    roundEnded: Boolean
+}
+
+input DeliveryRoundEditInput {
+    documentId: ID!
+    name: String!
+    deliveries: [DeliveryEditInput!]!
+    driverId: ID!
+    roundEnded: Boolean
+}
+
