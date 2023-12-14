@@ -6,7 +6,7 @@ name: Build and deploy WAR app to Azure Web App - snappiesbackend
 on:
   push:
     branches:
-      - deploy
+      - develop
   workflow_dispatch:
 
 jobs:

@@ -3,14 +3,11 @@ package org.example.services;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
-import org.example.models.Delivery;
 import org.example.models.User;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 @Service
@@ -22,6 +19,11 @@ public class UserService {
 
     public UserService(Firestore dbFirestore) {
         this.dbFirestore = dbFirestore;
+    }
+
+    public UserService(Firestore firestore,CollectionReference collectionReference){
+        this.usersCollection = collectionReference;
+        this.dbFirestore = firestore;
     }
 
     public UserService() {
