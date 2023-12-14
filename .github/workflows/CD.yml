@@ -49,5 +49,5 @@ jobs:
         with:
           app-name: 'snappiesbackend'
           slot-name: 'production'
-          publish-profile: ${{ AZUREAPPSERVICE_PUBLISHPROFILE_8B601C30492E41438EB5E4634BA201F5 }}
+          publish-profile: '${{ AZUREAPPSERVICE_PUBLISHPROFILE_8B601C30492E41438EB5E4634BA201F5 }}'
           package: '*.jar'
