@@ -90,6 +90,13 @@ public class DeliveryService {
                 .document(deliveryId)
                 .update("delivered", true);
     }
+    public void openDelivery(String deliveryId) throws ExecutionException, InterruptedException {
+        Delivery delivery = this.deliveryById(deliveryId);
+        delivery.setDelivered(false);
+        deliveriesCollection
+                .document(deliveryId)
+                .update("delivered", false);
+    }
 
 
     public String deleteDelivery(String documentId){

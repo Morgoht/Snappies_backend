@@ -60,5 +60,9 @@ public class DeliveryController {
         service.closeDelivery(deliveryId);
         return "Succesfully closed delivery";
     }
-
+    @MutationMapping
+    public String openDelivery(@Argument String deliveryId) throws ExecutionException, InterruptedException {
+        service.openDelivery(deliveryId);
+        return "Succesfully closed delivery";
+    }
 }
