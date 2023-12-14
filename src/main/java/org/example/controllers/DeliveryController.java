@@ -28,7 +28,7 @@ public class DeliveryController {
 
     @QueryMapping
     public List<Delivery> allDeliveries() throws ExecutionException, InterruptedException {
-        return service.allDeliveries();
+        return service.allDeliveriesBatched();
     }
 
 

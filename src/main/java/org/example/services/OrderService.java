@@ -8,7 +8,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firestore.v1.Document;
 import org.example.controllers.OrderLineController;
 import org.example.models.Daycare;
-import org.example.models.Delivery;
+import org.example.models.Order;
 import org.example.models.Order;
 import org.example.models.OrderLine;
 import org.mockito.internal.matchers.Or;
@@ -69,6 +69,34 @@ public class OrderService {
 
         for (QueryDocumentSnapshot document : snapshot.getDocuments()) {
             orders.add(setOrderFromDocumentSnapshot(document));
+        }
+
+        return orders;
+    }
+
+    public List<Order> allOrdersBatched() throws ExecutionException, InterruptedException {
+        CollectionReference collection = ordersCollection;
+        int batchSize = 50; // Set your preferred batch size
+        List<Order> orders = new ArrayList<>();
+        // Start query with initial batch
+        Query query = collection.limit(batchSize);
+        while (true) {
+            // Fetch the documents in batches
+            ApiFuture<QuerySnapshot> querySnapshot = query.get();
+
+            for (DocumentSnapshot doc : querySnapshot.get().getDocuments()) {
+                Order delivery = setOrderFromDocumentSnapshot(doc);
+                if (delivery != null) {
+                    orders.add(delivery);
+                }
+            }
+            // If there are fewer documents than the batch size, no more documents to fetch
+            if (querySnapshot.get().size() < batchSize) {
+                break;
+            }
+            // Fetch the next batch of documents after the last one in the current batch
+            DocumentSnapshot lastDocument = querySnapshot.get().getDocuments().get(querySnapshot.get().size() - 1);
+            query = collection.startAfter(lastDocument).limit(batchSize);
         }
 
         return orders;

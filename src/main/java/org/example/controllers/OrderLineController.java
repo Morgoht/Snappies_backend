@@ -29,7 +29,7 @@ public class OrderLineController {
 
     @QueryMapping
     public List<OrderLine> allOrderLines() throws ExecutionException, InterruptedException {
-        return service.allOrderLines();
+        return service.allOrderLinesBatched();
     }
 
 

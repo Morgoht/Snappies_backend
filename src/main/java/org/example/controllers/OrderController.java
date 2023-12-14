@@ -31,7 +31,7 @@ public class OrderController {
 
     @QueryMapping
     public List<Order> allOrders() throws ExecutionException, InterruptedException {
-        return service.allOrders();
+        return service.allOrdersBatched();
     }
 
 

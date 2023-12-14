@@ -27,10 +27,8 @@ public class DeliveryRoundService {
         CollectionReference collection = deliveryRoundsCollection;
         int batchSize = 50; // Set your preferred batch size
         List<DeliveryRound> deliveryRoundList = new ArrayList<>();
-
         // Start query with initial batch
         Query query = collection.limit(batchSize);
-
         while (true) {
             // Fetch the documents in batches
             ApiFuture<QuerySnapshot> querySnapshot = query.get();
@@ -41,12 +39,10 @@ public class DeliveryRoundService {
                     deliveryRoundList.add(deliveryRound);
                 }
             }
-
             // If there are fewer documents than the batch size, no more documents to fetch
             if (querySnapshot.get().size() < batchSize) {
                 break;
             }
-
             // Fetch the next batch of documents after the last one in the current batch
             DocumentSnapshot lastDocument = querySnapshot.get().getDocuments().get(querySnapshot.get().size() - 1);
             query = collection.startAfter(lastDocument).limit(batchSize);
