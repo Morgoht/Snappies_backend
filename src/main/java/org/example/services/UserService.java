@@ -17,8 +17,17 @@ import java.util.concurrent.ExecutionException;
 public class UserService {
 
 
-    Firestore dbFirestore = FirestoreClient.getFirestore();
-    CollectionReference usersCollection =dbFirestore.collection("users");
+    Firestore dbFirestore;
+    CollectionReference usersCollection;
+
+    public UserService(Firestore dbFirestore) {
+        this.dbFirestore = dbFirestore;
+    }
+
+    public UserService() {
+        this.dbFirestore = FirestoreClient.getFirestore();
+        this.usersCollection = dbFirestore.collection("users");
+    }
 
     public User userById(String documentId) throws ExecutionException, InterruptedException {
         DocumentReference documentReference = usersCollection.document(documentId);
