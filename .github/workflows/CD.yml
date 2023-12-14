@@ -4,7 +4,7 @@
 name: Build and deploy WAR app to Azure Web App - snappiesbackend
 
 on:
-  pull_request:
+  push:
     branches:
       - main
   workflow_dispatch:
