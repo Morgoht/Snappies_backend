@@ -102,7 +102,7 @@ public class DeliveryRoundService {
     }
 
 
-    public String createDeliveryRound(DeliveryRound deliveryRound, String driverId) throws ExecutionException, InterruptedException {
+    public DeliveryRound createDeliveryRound(DeliveryRound deliveryRound, String driverId) throws ExecutionException, InterruptedException {
         DocumentReference docRef = deliveryRoundsCollection.document(deliveryRound.getDocumentId());
         ApiFuture<WriteResult> collectionsApiFuture = docRef.set(deliveryRound);
         docRef.update("name", deliveryRound.getName());
@@ -110,7 +110,7 @@ public class DeliveryRoundService {
             DocumentReference userReference = dbFirestore.collection("users").document(driverId);
             docRef.update("driver", userReference);
         }
-        return collectionsApiFuture.get().getUpdateTime().toString();
+        return deliveryRoundById(docRef.getId());
     }
 
     public DeliveryRound updateDeliveryRound(String deliveryRoundId, String name, String driverId) throws ExecutionException, InterruptedException {

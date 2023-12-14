@@ -81,7 +81,7 @@ public class DeliveryService {
         return deliveries;
     }
 
-    public String  createDelivery(Delivery delivery, String orderId) throws ExecutionException, InterruptedException {
+    public Delivery createDelivery(Delivery delivery, String orderId) throws ExecutionException, InterruptedException {
         DocumentReference docRef =deliveriesCollection.document(delivery.getDocumentId());
         ApiFuture<WriteResult> collectionsApiFuture = docRef.set(delivery);
         DocumentReference orderRef = dbFirestore.collection("orders").document(orderId);
@@ -89,7 +89,7 @@ public class DeliveryService {
                 .document(delivery.getDocumentId())
                 .update("order", orderRef);
 
-        return collectionsApiFuture.get().getUpdateTime().toString();
+        return deliveryById(docRef.getId());
     }
 
 

@@ -59,9 +59,9 @@ public class UserService {
         return userList;
     }
 
-    public String createUser(User user) throws ExecutionException, InterruptedException {
+    public User createUser(User user) throws ExecutionException, InterruptedException {
         ApiFuture<WriteResult> collectionsApiFuture = usersCollection.document(user.getDocumentId()).set(user);
-        return collectionsApiFuture.get().getUpdateTime().toString();
+        return user;
     }
 
     public User updateUser(String userId,String name, String lastname,String username,String email,String password,String phoneNumber) throws ExecutionException, InterruptedException {

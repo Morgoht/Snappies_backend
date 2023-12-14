@@ -33,7 +33,7 @@ public class DeliveryController {
 
 
     @MutationMapping
-    public String createDelivery(@Argument String orderId) throws ExecutionException, InterruptedException {
+    public Delivery createDelivery(@Argument String orderId) throws ExecutionException, InterruptedException {
         Delivery delivery = new Delivery();
         delivery.setDocumentId(UUID.randomUUID().toString());
         return  service.createDelivery(delivery,orderId);

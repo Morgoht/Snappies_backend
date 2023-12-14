@@ -34,7 +34,7 @@ public class DeliveryRoundController {
     }
 
     @MutationMapping
-    public String createDeliveryRound(@Argument String name, @Argument String driverId) throws ExecutionException, InterruptedException {
+    public DeliveryRound createDeliveryRound(@Argument String name, @Argument String driverId) throws ExecutionException, InterruptedException {
         DeliveryRound deliveryRound = new DeliveryRound();
         deliveryRound.setDocumentId(UUID.randomUUID().toString());
         deliveryRound.setName(name);

@@ -46,9 +46,9 @@ public class DaycareService {
         return daycareList;
     }
 
-    public String createDaycare(Daycare daycare) throws ExecutionException, InterruptedException {
+    public Daycare createDaycare(Daycare daycare) throws ExecutionException, InterruptedException {
         ApiFuture<WriteResult> collectionsApiFuture = daycaresCollection.document(daycare.getDocumentId()).set(daycare);
-        return collectionsApiFuture.get().getUpdateTime().toString();
+        return daycare;
     }
 
     public Daycare updateDaycare( String daycareId,  String address,  String name,  String phoneNumber,  String email) throws ExecutionException, InterruptedException {

@@ -102,13 +102,13 @@ public class OrderLineService {
         return orderLines;
     }
 
-    public String createOrderLine(OrderLine orderLine, String articleId) throws ExecutionException, InterruptedException {
+    public OrderLine createOrderLine(OrderLine orderLine, String articleId) throws ExecutionException, InterruptedException {
 
         DocumentReference docRef = orderLinesCollection.document(orderLine.getDocumentId());
         ApiFuture<WriteResult> collectionsApiFuture = docRef.set(orderLine);
         DocumentReference articleRef = dbFirestore.collection("articles").document(articleId);
         docRef.update("article", articleRef);
-        return collectionsApiFuture.get().getUpdateTime().toString();
+        return orderLineById(docRef.getId());
 
     }
 

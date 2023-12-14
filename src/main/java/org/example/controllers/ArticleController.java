@@ -32,7 +32,7 @@ public class ArticleController {
 
 
     @MutationMapping
-    public String createArticle(@Argument String name, @Argument int reserve,@Argument String storageType) throws ExecutionException, InterruptedException {
+    public Article createArticle(@Argument String name, @Argument int reserve,@Argument String storageType) throws ExecutionException, InterruptedException {
         Article article = new Article();
         article.setDocumentId(UUID.randomUUID().toString());
         article.setName(name);

@@ -34,7 +34,7 @@ public class OrderLineController {
 
 
     @MutationMapping
-    public String createOrderLine(@Argument String articleId, @Argument double quantity) throws ExecutionException, InterruptedException {
+    public OrderLine createOrderLine(@Argument String articleId, @Argument double quantity) throws ExecutionException, InterruptedException {
         OrderLine orderLine = new OrderLine();
         orderLine.setDocumentId(UUID.randomUUID().toString());
         orderLine.setQuantity(quantity);

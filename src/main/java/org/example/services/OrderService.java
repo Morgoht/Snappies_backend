@@ -102,13 +102,13 @@ public class OrderService {
         return orders;
     }
 
-    public String createOrder(Order order, String daycareId) throws ExecutionException, InterruptedException {
+    public Order createOrder(Order order, String daycareId) throws ExecutionException, InterruptedException {
         DocumentReference docRef = ordersCollection.document(order.getDocumentId());
         ApiFuture<WriteResult> collectionsApiFuture = docRef.set(order);
         DocumentReference daycareRef = dbFirestore.collection("daycares").document(daycareId);
         docRef.update("daycare", daycareRef);
 
-        return collectionsApiFuture.get().getUpdateTime().toString();
+        return orderById(docRef.getId());
     }
 
     public Order updateOrder(String orderId, String daycareId) throws ExecutionException, InterruptedException {

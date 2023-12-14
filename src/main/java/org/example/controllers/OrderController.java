@@ -36,7 +36,7 @@ public class OrderController {
 
 
     @MutationMapping
-    public String createOrder(@Argument String daycareId) throws ExecutionException, InterruptedException {
+    public Order createOrder(@Argument String daycareId) throws ExecutionException, InterruptedException {
         Order order = new Order();
         order.setDocumentId(UUID.randomUUID().toString());
         return service.createOrder(order, daycareId);

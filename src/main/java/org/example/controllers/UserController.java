@@ -35,7 +35,7 @@ public class UserController {
 
 
     @MutationMapping
-    public String createUser(@Argument String name, @Argument String lastname,
+    public User createUser(@Argument String name, @Argument String lastname,
                            @Argument String username, @Argument String email, @Argument String password,@Argument String phoneNumber) throws ExecutionException, InterruptedException {
         User user = new User();
         user.setDocumentId(UUID.randomUUID().toString());

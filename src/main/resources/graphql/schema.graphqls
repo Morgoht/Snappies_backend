@@ -22,37 +22,37 @@ type Query {
     deliveryById(deliveryId: ID!):Delivery
 }
 type Mutation {
-    createUser(name: String!, lastname: String!, username: String!, email: String!, password: String!, phoneNumber:String!): String
+    createUser(name: String!, lastname: String!, username: String!, email: String!, password: String!, phoneNumber:String!): User
     updateUser(userId: ID!,name: String, lastname: String, username: String, email: String, password: String, phoneNumber:String): User
     deleteUser(userId: ID): String
 
-    createArticle(name: String!,reserve: Int!,storageType: String!): String
+    createArticle(name: String!,reserve: Int!,storageType: String!): Article
     updateArticle(articleId:ID!,name: String, reserve: Int,storageType: String): Article
     deleteArticle(documentId: ID!): String
 
-    createDaycare(address: String!, name: String!, phoneNumber:String!,email:String!): String
+    createDaycare(address: String!, name: String!, phoneNumber:String!,email:String!): Daycare
     updateDaycare(daycareId:ID!,address: String!, name: String!, phoneNumber:String!,email:String!): Daycare
     deleteDaycare(documentId: ID!): String
 
-    createOrder(daycareId: ID!): String
+    createOrder(daycareId: ID!): Order
     updateOrder(orderId: ID!, daycareId: ID!): Order
     deleteOrder(documentId: ID!): String
     addOrderLine(orderId: ID!, articleId: ID!, quantity: Float!): Boolean
     removeOrderLine(documentId: ID!,orderLineId:ID!):Boolean
 
-    createOrderLine(articleId: ID!, quantity: Float!): String
+    createOrderLine(articleId: ID!, quantity: Float!): OrderLine
     updateOrderLine(orderLineId: ID!, quantity: Float!): OrderLine
     deleteOrderLine(orderLineId: ID!): String
     permanentUpdateOrderLine(orderLineId: ID!, quantity: Float!): OrderLine
 
-    createDelivery(orderId: ID!): String
+    createDelivery(orderId: ID!): Delivery
     updateDelivery(orderId: ID): Delivery
     deleteDelivery(documentId: ID!): String
     closeDelivery(deliveryId:ID!):String
     openDelivery(deliveryId:ID!):String
     resetDelivery(deliveryId:ID!):String
 
-    createDeliveryRound(name: String!, driverId: ID): String
+    createDeliveryRound(name: String!, driverId: ID): DeliveryRound
     updateDeliveryRound(deliveryRoundId: ID!,name: String, driverId: ID,roundEnded: Boolean): DeliveryRound
     deleteDeliveryRound(documentId: ID!): String
     addDelivery(deliveryRoundId: ID!, deliveryId: ID!): Boolean
