@@ -10,9 +10,9 @@ import java.util.List;
 public class DeliveryRound {
     private String documentId;
     private String name;
+    private User driver;
     private List<Delivery> deliveries = new ArrayList<>();
     private boolean roundEnded;
-
 
 
     public boolean addDelivery(Delivery delivery){
@@ -23,4 +23,7 @@ public class DeliveryRound {
         Delivery toRemove = deliveries.stream().filter(e->e.getDocumentId().equals(deliveryId)).findFirst().get();
         return deliveries.remove(toRemove);
     }
+
+
+
 }

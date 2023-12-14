@@ -4,7 +4,10 @@ import org.example.models.Delivery;
 import org.example.models.OrderLine;
 import org.example.models.Daycare;
 import org.example.models.Order;
+import org.example.services.ArticleService;
+import org.example.services.OrderLineService;
 import org.example.services.OrderService;
+import org.mockito.internal.matchers.Or;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
@@ -33,28 +36,31 @@ public class OrderController {
 
 
     @MutationMapping
-    public Order createOrder(@Argument Order order) throws ExecutionException, InterruptedException {
-        order.setDocumentId(UUID.randomUUID().toString());
-        service.createOrder(order);
-        return order;
-    }
-
-    @MutationMapping
-    public Order updateOrder(@Argument Daycare daycare,
-                                 @Argument List<OrderLine> orderLines) throws ExecutionException, InterruptedException {
+    public String createOrder(@Argument String daycareId) throws ExecutionException, InterruptedException {
         Order order = new Order();
         order.setDocumentId(UUID.randomUUID().toString());
-        order.setDaycare(daycare);
-        order.setOrderLines(orderLines);
-        service.updateOrder(order);
-        return order;
+        return service.createOrder(order, daycareId);
     }
 
     @MutationMapping
-    public Order addOrderLine(@Argument String documentId, @Argument OrderLine orderLine) throws ExecutionException, InterruptedException {
-        return service.addOrderLine(documentId,orderLine);
+    public Order updateOrder(@Argument String orderId,@Argument String daycareId) throws ExecutionException, InterruptedException {
+        return service.updateOrder(orderId,daycareId);
     }
 
+    @MutationMapping
+    public boolean addOrderLine(@Argument String orderId, @Argument String articleId, @Argument double quantity) throws ExecutionException, InterruptedException {
+        OrderLine orderLine = new OrderLine();
+        orderLine.setDocumentId(UUID.randomUUID().toString());
+        orderLine.setQuantity(quantity);
+        return service.addOrderLine(orderId,orderLine,articleId);
+    }
+
+
+
+    @MutationMapping
+    public boolean removeOrderLine(@Argument String documentId, @Argument String orderLineId) throws ExecutionException, InterruptedException {
+        return service.removeOrderLine(documentId,orderLineId);
+    }
 
 
 

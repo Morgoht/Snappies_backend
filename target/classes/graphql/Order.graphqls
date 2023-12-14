@@ -1,12 +1,12 @@
 type Order {
     documentId: ID!
-    orderLines: [OrderLine!]!
+    orderLines: [OrderLine]!
     daycare: Daycare!
 }
 
 input OrderInput {
-    orderLines: [OrderLineInput]!
-    daycare: DaycareInputById!
+    orderLines: [ID!]!
+    daycare: ID!
 }
 
 input OrderEditInput {

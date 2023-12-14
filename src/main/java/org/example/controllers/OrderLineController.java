@@ -1,6 +1,7 @@
 package org.example.controllers;
 
 import org.example.models.Article;
+import org.example.models.Order;
 import org.example.models.OrderLine;
 import org.example.services.ArticleService;
 import org.example.services.OrderLineService;
@@ -15,12 +16,10 @@ import java.util.concurrent.ExecutionException;
 @Controller
 public class OrderLineController {
     private final OrderLineService service;
-    private final ArticleService articleService;
 
-    public OrderLineController(OrderLineService service, ArticleService articleService){
+    public OrderLineController(OrderLineService service){
 
         this.service = service;
-        this.articleService = articleService;
     }
 
     @QueryMapping
@@ -35,30 +34,27 @@ public class OrderLineController {
 
 
     @MutationMapping
-    public OrderLine createOrderLine(@Argument String articleId, @Argument int quantity) throws ExecutionException, InterruptedException {
+    public String createOrderLine(@Argument String articleId, @Argument double quantity) throws ExecutionException, InterruptedException {
         OrderLine orderLine = new OrderLine();
         orderLine.setDocumentId(UUID.randomUUID().toString());
-        orderLine.setArticle(articleService.articleById(articleId));
         orderLine.setQuantity(quantity);
-        service.createOrderLine(orderLine);
-        return orderLine;
+        return service.createOrderLine(orderLine, articleId);
     }
 
     @MutationMapping
-    public OrderLine updateOrderLine(@Argument String articleId,
-                                 @Argument int quantity, @Argument String orderLineId) throws ExecutionException, InterruptedException {
-        OrderLine orderLine = new OrderLine();
-        orderLine.setDocumentId(service.orderLineById(orderLineId).getDocumentId());
-        orderLine.setArticle(articleService.articleById(articleId));
-        orderLine.setQuantity(quantity);
-        service.updateOrderLine(orderLine);
-        return orderLine;
+    public OrderLine updateOrderLine(@Argument String orderLineId, @Argument double quantity) throws ExecutionException, InterruptedException {
+        return service.updateOrderLine(orderLineId, quantity);
+    }
+
+    @MutationMapping
+    public OrderLine permanentUpdateOrderLine(@Argument String orderLineId, @Argument double quantity) throws ExecutionException, InterruptedException {
+        return service.permanentUpdateOrderLine(orderLineId, quantity);
     }
 
 
 
     @MutationMapping
-    public String deleteOrderLine(@Argument String orderLineId){
+    public String deleteOrderLine(@Argument String orderLineId) throws ExecutionException, InterruptedException {
         return service.deleteOrderLine(orderLineId);
     }
 

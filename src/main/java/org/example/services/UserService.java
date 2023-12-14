@@ -3,6 +3,7 @@ package org.example.services;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
+import org.example.models.Delivery;
 import org.example.models.User;
 import org.springframework.stereotype.Service;
 
@@ -16,10 +17,20 @@ import java.util.concurrent.ExecutionException;
 public class UserService {
 
 
-    Firestore dbFirestore = FirestoreClient.getFirestore();
+    Firestore dbFirestore;
+    CollectionReference usersCollection;
+
+    public UserService(Firestore dbFirestore) {
+        this.dbFirestore = dbFirestore;
+    }
+
+    public UserService() {
+        this.dbFirestore = FirestoreClient.getFirestore();
+        this.usersCollection = dbFirestore.collection("users");
+    }
 
     public User userById(String documentId) throws ExecutionException, InterruptedException {
-        DocumentReference documentReference = dbFirestore.collection("users").document(documentId);
+        DocumentReference documentReference = usersCollection.document(documentId);
         ApiFuture<DocumentSnapshot> future = documentReference.get();
         DocumentSnapshot document = future.get();
         User user;
@@ -32,7 +43,7 @@ public class UserService {
     }
 
     public List<User> allUsers() throws ExecutionException, InterruptedException {
-        CollectionReference collection = dbFirestore.collection("users");
+        CollectionReference collection = usersCollection;
         ApiFuture<QuerySnapshot> querySnapshot = collection.get();
 
         List<User> userList = new ArrayList<>();
@@ -47,46 +58,48 @@ public class UserService {
     }
 
     public String createUser(User user) throws ExecutionException, InterruptedException {
-        ApiFuture<WriteResult> collectionsApiFuture = dbFirestore.collection("users").document(user.getDocumentId()).set(user);
+        ApiFuture<WriteResult> collectionsApiFuture = usersCollection.document(user.getDocumentId()).set(user);
         return collectionsApiFuture.get().getUpdateTime().toString();
     }
 
-    public String updateUser(User user) throws ExecutionException, InterruptedException {
-        Map<String, Object> updates = new HashMap<>();
+    public User updateUser(String userId,String name, String lastname,String username,String email,String password,String phoneNumber) throws ExecutionException, InterruptedException {
+        User userToUpdate = this.userById(userId);
+       DocumentReference docRef = usersCollection.document(userId);
 
-        if (user.getName() != null) {
-            updates.put("name", user.getName());
+        if (name!= null) {
+            docRef.update("name", name);
+            userToUpdate.setName(name);
         }
 
-        if (user.getLastname() != null) {
-            updates.put("lastname", user.getLastname());
+        if (lastname != null) {
+            docRef.update("lastName",lastname);
+            userToUpdate.setLastname(lastname);
         }
 
-        if (user.getUsername() != null) {
-            updates.put("username", user.getUsername());
+        if (username!= null) {
+            docRef.update("username", username);
+            userToUpdate.setUsername(username);
         }
 
-        if (user.getEmail() != null) {
-            updates.put("email", user.getEmail());
+        if (email != null) {
+            docRef.update("email", email);
+            userToUpdate.setEmail(email);
         }
 
-        if (user.getPassword() != null) {
-            updates.put("password", user.getPassword());
+        if (password != null) {
+            docRef.update("password", password);
+            userToUpdate.setPassword(password);
         }
 
-        if (user.getPhoneNumber() != null) {
-            updates.put("phoneNumber", user.getPhoneNumber());
+        if (phoneNumber != null) {
+            docRef.update("phoneNumber", phoneNumber);
+            userToUpdate.setPhoneNumber(phoneNumber);
         }
-        ApiFuture<WriteResult> collectionsApiFuture = dbFirestore
-                .collection("users")
-                .document(user.getDocumentId())
-                .update(updates);
-
-        return collectionsApiFuture.get().getUpdateTime().toString();
+        return userToUpdate;
     }
 
     public String deleteUser(String documentId){
-        dbFirestore.collection("users").document(documentId).delete();
+        usersCollection.document(documentId).delete();
         return "Successfully deleted user";
     }
 }

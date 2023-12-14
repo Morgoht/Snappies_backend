@@ -2,6 +2,7 @@ package org.example.controllers;
 
 import org.example.models.Delivery;
 import org.example.models.DeliveryRound;
+import org.example.models.Order;
 import org.example.services.DeliveryRoundService;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
@@ -33,36 +34,38 @@ public class DeliveryRoundController {
     }
 
     @MutationMapping
-    public DeliveryRound createDeliveryRound(@Argument String name)
-            throws ExecutionException, InterruptedException {
+    public String createDeliveryRound(@Argument String name, @Argument String driverId) throws ExecutionException, InterruptedException {
         DeliveryRound deliveryRound = new DeliveryRound();
         deliveryRound.setDocumentId(UUID.randomUUID().toString());
         deliveryRound.setName(name);
-        // You might need to add more logic here based on your actual data model
-        service.createDeliveryRound(deliveryRound);
-        return deliveryRound;
+        return service.createDeliveryRound(deliveryRound, driverId);
     }
 
     @MutationMapping
-    public DeliveryRound updateDeliveryRound(@Argument String deliveryRoundId,
-                                             @Argument String name, @Argument boolean roundEnded)
-            throws ExecutionException, InterruptedException {
-        DeliveryRound deliveryRound = new DeliveryRound();
-        deliveryRound.setDocumentId(deliveryRoundId);
-        deliveryRound.setName(name);
-        deliveryRound.setRoundEnded(roundEnded);
-        // You might need to add more logic here based on your actual data model
-        service.updateDeliveryRound(deliveryRound);
-        return deliveryRound;
+    public DeliveryRound updateDeliveryRound(@Argument String deliveryRoundId, @Argument String name, @Argument String driverId) throws ExecutionException, InterruptedException {
+        return service.updateDeliveryRound(deliveryRoundId,name,driverId);
     }
 
+    @MutationMapping
+    public String endRound(@Argument String deliveryRoundId) throws ExecutionException, InterruptedException {
+        return service.endRound(deliveryRoundId);
+    }
+    @MutationMapping
+    public String restartRound(@Argument String deliveryRoundId) throws ExecutionException, InterruptedException {
+        return service.restartRound(deliveryRoundId);
+    }
     @MutationMapping
     public String deleteDeliveryRound(@Argument String deliveryRoundId) {
         return service.deleteDeliveryRound(deliveryRoundId);
     }
 
     @MutationMapping
-    public Delivery addDelivery(@Argument String documentId, @Argument Delivery delivery) throws ExecutionException, InterruptedException {
-        return service.addDelivery(documentId,delivery);
+    public boolean addDelivery(@Argument String deliveryRoundId, @Argument String deliveryId) throws ExecutionException, InterruptedException {
+        return service.addDelivery(deliveryRoundId,deliveryId);
+    }
+
+    @MutationMapping
+    public boolean removeDelivery(@Argument String documentId, @Argument String deliveryId) throws ExecutionException, InterruptedException {
+        return service.removeDelivery(documentId,deliveryId);
     }
 }

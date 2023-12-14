@@ -1,7 +1,6 @@
 package org.example.models;
 
 import lombok.Data;
-import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,4 +14,10 @@ public class Order {
     public boolean addOrderLine(OrderLine line){
         return orderLines.add(line);
     }
+
+    public boolean removeOrderLine(String orderLineId){
+        OrderLine toRemove = orderLines.stream().filter(e->e.getDocumentId().equals(orderLineId)).findFirst().get();
+        return orderLines.remove(toRemove);
+    }
+
 }

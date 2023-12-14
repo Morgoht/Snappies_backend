@@ -4,14 +4,17 @@ import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
 import org.example.models.Article;
-import org.example.models.Order;
 import org.example.models.OrderLine;
 
+import org.example.models.Update;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+
+import static javax.swing.JOptionPane.showMessageDialog;
 
 @Service
 public class OrderLineService {
@@ -26,8 +29,13 @@ public class OrderLineService {
             //Instanciate required Services
             ArticleService articleService = new ArticleService();
             //Find the article by the reference from Firebase and set
-            orderLine.setArticle(articleService.articleById(UtilService.findByReference(doc,"article")));
-            orderLine.setQuantity(Math.toIntExact((Long) doc.get("quantity")));
+            Article article = articleService.articleById(UtilService.findByReference(doc,"article"));
+            orderLine.setArticle(article);
+            if(doc.get("quantity").getClass().equals(Long.class)){
+                orderLine.setQuantity(((Long)doc.get("quantity")).doubleValue());
+            }else{
+                orderLine.setQuantity((Double)doc.get("quantity"));
+            }
             return orderLine;
         } else {
             return null;
@@ -54,21 +62,78 @@ public class OrderLineService {
         return orderLineList;
     }
 
-    public String createOrderLine(OrderLine orderLine) throws ExecutionException, InterruptedException {
-        ApiFuture<WriteResult> collectionsApiFuture = dbFirestore.collection("orderLine").document(orderLine.getDocumentId()).set(orderLine);
+    public String createOrderLine(OrderLine orderLine, String articleId) throws ExecutionException, InterruptedException {
+
+        DocumentReference docRef = dbFirestore.collection("orderLines").document(orderLine.getDocumentId());
+        ApiFuture<WriteResult> collectionsApiFuture = docRef.set(orderLine);
+        DocumentReference articleRef = dbFirestore.collection("articles").document(articleId);
+        docRef.update("article", articleRef);
         return collectionsApiFuture.get().getUpdateTime().toString();
+
     }
 
-    public String updateOrderLine(OrderLine orderLine) throws ExecutionException, InterruptedException {
-        ApiFuture<WriteResult> collectionsApiFuture;
-        dbFirestore.collection("orderLine").document(orderLine.getDocumentId()).set(orderLine);
-        collectionsApiFuture = dbFirestore.collection("articles").document(orderLine.getDocumentId()).set(orderLine);
-        return collectionsApiFuture.get().getUpdateTime().toString();
+    public OrderLine updateOrderLine(String orderLineId,double quantity) throws ExecutionException, InterruptedException {
+        OrderLine orderLine = this.orderLineById(orderLineId);
+        double backupQuantity = orderLine.getQuantity();
+        orderLine.setQuantity(quantity);
+        DocumentReference docRef = dbFirestore.collection("orderLines").document(orderLineId);
+        docRef.update("quantity",quantity);
+        createOrderLineBackup(orderLineId,backupQuantity,quantity);
+        System.out.println("Updating order with ID :"+orderLineId+"\n quantity before :"+backupQuantity+"\n quantity after :"+quantity);
+        return orderLine;
+        //Create a new object of type Change in the collection changes saving the orderLineId, the original quantity and the new quantity
+
     }
 
+    public OrderLine permanentUpdateOrderLine(String orderLineId,double quantity) throws ExecutionException, InterruptedException {
+        OrderLine orderLine = this.orderLineById(orderLineId);
+        double backupQuantity = orderLine.getQuantity();
+        orderLine.setQuantity(quantity);
+        DocumentReference docRef = dbFirestore.collection("orderLines").document(orderLineId);
+        docRef.update("quantity",quantity);
+        return orderLine;
+        //Create a new object of type Change in the collection changes saving the orderLineId, the original quantity and the new quantity
 
-    public String deleteOrderLine(String documentId){
-        ApiFuture<WriteResult> writeResultApiFuture = dbFirestore.collection("orderLine").document(documentId).delete();
-        return "Successfully deleted orderLine";
+    }
+
+    public void createOrderLineBackup(String orderlineId, double backupQuantity, double newQuantity) throws ExecutionException, InterruptedException {
+        Update update = new Update();
+        update.setDocumentId(orderlineId+"Updated");
+        update.setUpdatedOrderId(orderlineId);
+        update.setBackupQuantity(backupQuantity);
+        update.setNewQuantity(newQuantity);
+        DocumentReference docRef = dbFirestore.collection("orderLineUpdates").document(update.getDocumentId());
+        ApiFuture<WriteResult> collectionsApiFuture = docRef.set(update);
+        collectionsApiFuture.get();
+    }
+
+    public void resetOrderLine(String orderlineId) throws ExecutionException, InterruptedException {
+        String orderLineUpdateId = orderlineId+"Updated";
+        DocumentReference docRef = dbFirestore.collection("orderLineUpdates").document(orderLineUpdateId);
+        ApiFuture<DocumentSnapshot> future = docRef.get();
+        DocumentSnapshot document = future.get();
+        double backupQuantity;
+        Object obj = document.get("backupQuantity");
+        if(obj==null){
+            System.out.println("There were no changes to the deliveries in this round");
+        }else {
+            if (document.get("backupQuantity").getClass().equals(Long.class)) {
+                backupQuantity = ((Long) document.get("backupQuantity")).doubleValue();
+            } else {
+                backupQuantity = (Double) document.get("backupQuantity");
+            }
+            updateOrderLine(orderlineId, backupQuantity);
+            deleteOrderLineBackup(orderLineUpdateId);
+        }
+    }
+
+    public String deleteOrderLine(String documentId) throws ExecutionException, InterruptedException {
+        ApiFuture<WriteResult> writeResult = dbFirestore.collection("orderLines").document(documentId).delete();
+       return ("Update time : " + writeResult.get().getUpdateTime());
+    }
+
+    public String deleteOrderLineBackup(String orderLineUpdateId) throws ExecutionException, InterruptedException {
+        ApiFuture<WriteResult> writeResult = dbFirestore.collection("orderLineUpdates").document(orderLineUpdateId).delete();
+        return ("Update time : " + writeResult.get().getUpdateTime());
     }
 }

@@ -1,5 +1,6 @@
 package org.example.controllers;
 
+import org.checkerframework.checker.units.qual.A;
 import org.example.services.UserService;
 import org.example.models.User;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -34,7 +35,7 @@ public class UserController {
 
 
     @MutationMapping
-    public User  createUser(@Argument String name, @Argument String lastname,
+    public String createUser(@Argument String name, @Argument String lastname,
                            @Argument String username, @Argument String email, @Argument String password,@Argument String phoneNumber) throws ExecutionException, InterruptedException {
         User user = new User();
         user.setDocumentId(UUID.randomUUID().toString());
@@ -44,15 +45,14 @@ public class UserController {
         user.setUsername(username);
         user.setPassword(password);
         user.setPhoneNumber(phoneNumber);
-        service.createUser(user);
-        return user;
+        return service.createUser(user);
     }
 
 
     @MutationMapping
-    public User updateUser(@Argument User user) throws ExecutionException, InterruptedException {
-        service.updateUser(user);
-        return user;
+    public User updateUser(@Argument String userId,@Argument String name, @Argument String lastname,
+                           @Argument String username, @Argument String email, @Argument String password,@Argument String phoneNumber) throws ExecutionException, InterruptedException {
+        return service.updateUser(userId, name, lastname,username,email,password,phoneNumber);
     }
 
     @MutationMapping

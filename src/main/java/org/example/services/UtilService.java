@@ -21,8 +21,10 @@ public class UtilService {
     }
 
     public static List<String> listOfReferences(DocumentSnapshot doc, String collection) throws ExecutionException, InterruptedException {
-        List<DocumentReference> refList = (List<DocumentReference>) doc.get(collection);
-        assert refList != null;
+        List<DocumentReference> refList = new ArrayList<>();
+        if(doc.get(collection)!=null) {
+            refList = (List<DocumentReference>) doc.get(collection);
+        }
         List<String> finalList = new ArrayList<>();
         for (DocumentReference ref: refList
         ) {

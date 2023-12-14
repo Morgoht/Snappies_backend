@@ -8,6 +8,7 @@ import java.util.List;
 public class Delivery {
     private String documentId;
     private Order order;
-    private User driver;
     private boolean delivered;
+
+
 }

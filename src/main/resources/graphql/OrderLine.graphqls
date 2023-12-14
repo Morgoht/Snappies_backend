@@ -1,12 +1,12 @@
 type OrderLine {
     documentId: ID!
     article: Article!
-    quantity: Int!
+    quantity: Float!
 }
 
 input OrderLineInput {
     article: ArticleInputById!
-    quantity: Int!
+    quantity: Float!
 }
 
 input OrderLineById {
@@ -16,5 +16,5 @@ input OrderLineById {
 input OrderLineEditInput {
     documentId: ID!
     article: ArticleInputById!
-    quantity: Int!
+    quantity: Float!
 }

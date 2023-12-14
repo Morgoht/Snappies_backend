@@ -3,38 +3,49 @@ package org.example.services;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firestore.v1.Document;
+import org.example.controllers.OrderLineController;
 import org.example.models.Daycare;
+import org.example.models.Delivery;
 import org.example.models.Order;
 import org.example.models.OrderLine;
 import org.mockito.internal.matchers.Or;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+
+
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 @Service
 public class OrderService {
     Firestore dbFirestore = FirestoreClient.getFirestore();
+    CollectionReference ordersCollection = dbFirestore.collection("orders");
 
     public Order setOrderFromDocumentSnapshot(DocumentSnapshot doc) throws ExecutionException, InterruptedException {
         if (doc.exists()) {
-            //Create Order and set ID
             Order order = new Order();
             order.setDocumentId(doc.getId());
-
-            //Instanciate required Services
             DaycareService daycareService = new DaycareService();
             OrderLineService orderLineService = new OrderLineService();
-
-            //Find the daycare by the reference from Firebase and set the Order.Daycare
             order.setDaycare(daycareService.daycareById(UtilService.findByReference(doc,"daycare")));
+            for (String id: UtilService.listOfReferences(doc,"orderLines")
+            )   {
+                OrderLine orderLine = orderLineService.orderLineById(id);
+                if(orderLine==null) {
+                    this.removeDeletedOrderLine(doc.getId(), id);
+                }
+                else order.addOrderLine(orderLine);
 
-            //Find and fill the Orderlines table with Orderlines
-            for (String id: UtilService.listOfReferences(doc,"orderLine")
-            ) {
-                order.addOrderLine(orderLineService.orderLineById(id));
             }
             return order;
         } else {
@@ -43,7 +54,7 @@ public class OrderService {
     }
 
     public Order orderById(String documentId) throws ExecutionException, InterruptedException {
-        DocumentReference documentReference = dbFirestore.collection("orders").document(documentId);
+        DocumentReference documentReference = ordersCollection.document(documentId);
         ApiFuture<DocumentSnapshot> future = documentReference.get();
         DocumentSnapshot document = future.get();
         return setOrderFromDocumentSnapshot(document);
@@ -51,13 +62,9 @@ public class OrderService {
 
 
     public List<Order> allOrders() throws ExecutionException, InterruptedException {
-        CollectionReference collection = dbFirestore.collection("orders");
-
-        // Récupérer tous les documents de la collection "orders"
+        CollectionReference collection = ordersCollection;
         ApiFuture<QuerySnapshot> querySnapshot = collection.get();
         QuerySnapshot snapshot = querySnapshot.get();
-
-        // Initialiser la liste d'orders
         List<Order> orders = new ArrayList<>();
 
         for (QueryDocumentSnapshot document : snapshot.getDocuments()) {
@@ -67,50 +74,114 @@ public class OrderService {
         return orders;
     }
 
-    public String createOrder(Order order) throws ExecutionException, InterruptedException {
-        ApiFuture<WriteResult> collectionsApiFuture = dbFirestore.collection("orders").document(order.getDocumentId()).set(order);
+    public String createOrder(Order order, String daycareId) throws ExecutionException, InterruptedException {
+        DocumentReference docRef = ordersCollection.document(order.getDocumentId());
+        ApiFuture<WriteResult> collectionsApiFuture = docRef.set(order);
+        DocumentReference daycareRef = dbFirestore.collection("daycares").document(daycareId);
+        docRef.update("daycare", daycareRef);
+
         return collectionsApiFuture.get().getUpdateTime().toString();
     }
 
-    public String updateOrder(Order order) throws ExecutionException, InterruptedException {
-        ApiFuture<WriteResult> collectionsApiFuture;
-        dbFirestore.collection("orders").document(order.getDocumentId()).set(order);
-        collectionsApiFuture = dbFirestore.collection("orders").document(order.getDocumentId()).set(order);
-        return collectionsApiFuture.get().getUpdateTime().toString();
+    public Order updateOrder(String orderId, String daycareId) throws ExecutionException, InterruptedException {
+        Order order = this.orderById(orderId);
+        DocumentReference docRef = ordersCollection.document(order.getDocumentId());
+        order.setDaycare(new DaycareService().daycareById(daycareId));
+        DocumentReference daycareRef = dbFirestore.collection("daycares").document(daycareId);
+        docRef.update("daycare", daycareRef);
+        return order;
     }
-
 
     public String deleteOrder(String documentId){
-        dbFirestore.collection("orders").document(documentId).delete();
+        ordersCollection.document(documentId).delete();
         return "Successfully deleted order";
     }
 
-    public Order addOrderLine(String documentId, OrderLine orderLine) throws ExecutionException, InterruptedException {
+    public boolean addOrderLine(String documentId, OrderLine orderLine,String articleId) throws ExecutionException, InterruptedException {
+        DocumentReference docRef = dbFirestore.collection("orderLines").document(orderLine.getDocumentId());
+        ApiFuture<WriteResult> future = docRef.set(orderLine);
+        try {
+            // Wait for the completion of the first operation
+            future.get(15, TimeUnit.SECONDS);
 
-        DocumentReference orderRef = dbFirestore.collection("orders").document(documentId);
-        // Récupérez le document actuel
-        DocumentSnapshot document = orderRef.get().get();
+            DocumentReference articleRef = dbFirestore.collection("articles").document(articleId);
+            ApiFuture<WriteResult> futureUpdate = docRef.update("article", articleRef);
+
+            // Wait for the completion of the second operation
+            futureUpdate.get();
+
+            Order order = this.orderById(documentId);
+            ApiFuture<WriteResult> futureOrderlines = ordersCollection
+                    .document(documentId)
+                    .update("orderLines", FieldValue.arrayUnion(docRef));
+
+            // Wait for the completion of the third operation
+            futureOrderlines.get();
+            return order.addOrderLine(orderLine);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            // Handle exceptions
+        }
+           return false;
+    }
+
+    public void removeDeletedOrderLine(String documentId, String orderLineId) throws ExecutionException, InterruptedException {
+        DocumentReference docRef = dbFirestore.collection("orders").document(documentId);
+        // Fetch the document
+        ApiFuture<DocumentSnapshot> future = docRef.get();
+        DocumentSnapshot document = future.get();
+
         if (document.exists()) {
-            Order order = new Order();
-            order.setDocumentId(document.getId());
-            // Remarque : vous devrez peut-être ajuster le nom du champ dans votre modèle Order
-
-            // Trouver la Daycare en utilisant la référence depuis Firebase et la définir sur l'objet JAVA Daycare
-            DocumentReference documentReferenceDaycare = (DocumentReference) document.get("daycare");
-            if (documentReferenceDaycare != null) {
-                ApiFuture<DocumentSnapshot> futureDaycare = documentReferenceDaycare.get();
-                DocumentSnapshot daycareDoc = futureDaycare.get();
-
-                if (daycareDoc.exists()) {
-                    // Convertir le DocumentSnapshot en objet Daycare et le définir sur l'objet Order
-                    Daycare daycare = daycareDoc.toObject(Daycare.class);
-                    order.setDaycare(daycare);
+            // Get the array of references
+            List<DocumentReference> references = (List<DocumentReference>) document.get("orderLines");
+            if (references != null) {
+                List<DocumentReference> updatedReferences = new ArrayList<>(references);
+                // Find and remove the reference with the specified ID
+                for (DocumentReference reference : references) {
+                    if (reference.getId().equals(orderLineId)) {
+                        updatedReferences.remove(reference);
+                        break;
+                    }
                 }
+                // Update the document with the modified array
+                docRef.update("orderLines", updatedReferences)
+                        .get(); // Wait for the update to complete
+
+                System.out.println("Reference deleted from array");
+            } else {
+                System.out.println("No array field found in the document");
             }
-            return order;
         } else {
-            // Le document n'existe pas
-            return null;
+            System.out.println("Document does not exist");
+        }
+
+
+       }
+
+    public boolean containsOrderLine(String documentId, String orderLineId)throws ExecutionException, InterruptedException {
+        DocumentReference orderLineRef = dbFirestore.collection("orders").document(documentId).collection("orderLines").document(orderLineId);
+        ApiFuture<DocumentSnapshot> future = orderLineRef.get();
+        DocumentSnapshot document = future.get();
+        return document.exists();
+    }
+    public boolean removeOrderLine(String documentId, String orderLineId) throws ExecutionException, InterruptedException
+        {
+            Order order = this.orderById(documentId);
+            if (containsOrderLine(documentId, orderLineId)) {
+                DocumentReference orderLineRef = dbFirestore.collection("orderLines").document(orderLineId);
+                ordersCollection
+                        .document(documentId)
+                        .update("orderLines", FieldValue.arrayRemove(orderLineRef));
+                return order.removeOrderLine(orderLineId);
+            } else
+                return false;
+        }
+
+    public void resetOrder(String orderId) throws ExecutionException, InterruptedException {
+        Order order = this.orderById(orderId);
+        for (OrderLine ol: order.getOrderLines()
+             ) {
+            new OrderLineService().resetOrderLine(ol.getDocumentId());
+
         }
     }
 }

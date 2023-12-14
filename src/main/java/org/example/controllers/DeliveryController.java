@@ -1,5 +1,6 @@
 package org.example.controllers;
 
+import org.checkerframework.checker.units.qual.A;
 import org.example.models.Delivery;
 import org.example.models.Order;
 import org.example.models.User;
@@ -32,25 +33,15 @@ public class DeliveryController {
 
 
     @MutationMapping
-    public Delivery createDelivery(@Argument User driver, @Argument Order order) throws ExecutionException, InterruptedException {
+    public String createDelivery(@Argument String orderId) throws ExecutionException, InterruptedException {
         Delivery delivery = new Delivery();
         delivery.setDocumentId(UUID.randomUUID().toString());
-        delivery.setDriver(driver);
-        delivery.setOrder(order);
-        service.createDelivery(delivery);
-        return delivery;
+        return  service.createDelivery(delivery,orderId);
     }
 
     @MutationMapping
-    public Delivery updateDelivery(@Argument Order order,
-                                 @Argument User driver, @Argument boolean delivered) throws ExecutionException, InterruptedException {
-        Delivery delivery = new Delivery();
-        delivery.setDocumentId(UUID.randomUUID().toString());
-        delivery.setDriver(driver);
-        delivery.setOrder(order);
-        delivery.setDelivered(delivered);
-        service.updateDelivery(delivery);
-        return delivery;
+    public Delivery updateDelivery(@Argument String deliveryId, @Argument String orderId) throws ExecutionException, InterruptedException {
+        return service.updateDelivery(deliveryId,orderId);
     }
 
 
@@ -59,5 +50,15 @@ public class DeliveryController {
         return service.deleteDelivery(deliveryId);
     }
 
+    @MutationMapping
+    public String resetDelivery(@Argument String deliveryId) throws ExecutionException, InterruptedException {
+        service.resetDelivery(deliveryId);
+        return "Succesfully reset delivery";
+    }
+    @MutationMapping
+    public String closeDelivery(@Argument String deliveryId) throws ExecutionException, InterruptedException {
+        service.closeDelivery(deliveryId);
+        return "Succesfully closed delivery";
+    }
 
 }
