@@ -28,7 +28,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Snappies_backend
-          path: '${{ github.workspace }}/target/*.jar'
+          path: '${{SnappiesBackendProject}}/target/*.jar'
 
   deploy:
     runs-on: windows-latest
