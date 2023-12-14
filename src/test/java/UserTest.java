@@ -38,7 +38,6 @@ public class UserTest {
     @Test
     public void userByIdTest() {
         Firestore mockFirestore = Mockito.mock(Firestore.class);
-        Mockito.when(mockFirestore.collection("users")).thenReturn(colRef);
         Mockito.when(colRef.document("user1")).thenReturn(docRef);
         User mockUser = new User();
         Mockito.when(docRef.get()).thenReturn(future);
@@ -46,7 +45,7 @@ public class UserTest {
         Mockito.when(document.exists()).thenReturn(true);
         Mockito.when(document.toObject(User.class)).thenReturn(mockUser);
 
-        UserService userService = new UserService(mockFirestore);
+        UserService userService = new UserService(mockFirestore, colRef);
         User user;
         try {
             user = userService.userById("user1");
