@@ -13,6 +13,7 @@ type Query {
 
     allOrderLines: [OrderLine]
     orderLineById(orderLineId: ID!): OrderLine
+    wasUpdated(orderLineId: ID!):Boolean
 
     allDeliveryRounds: [DeliveryRound]
     deliveryRoundById(deliveryRoundId:ID!):DeliveryRound

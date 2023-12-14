@@ -51,7 +51,10 @@ public class OrderLineController {
         return service.permanentUpdateOrderLine(orderLineId, quantity);
     }
 
-
+    @QueryMapping
+    public boolean wasUpdated(@Argument String orderLineId) throws ExecutionException, InterruptedException {
+        return service.wasUpdated(orderLineId);
+    }
 
     @MutationMapping
     public String deleteOrderLine(@Argument String orderLineId) throws ExecutionException, InterruptedException {

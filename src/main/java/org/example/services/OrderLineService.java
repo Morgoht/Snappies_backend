@@ -52,6 +52,15 @@ public class OrderLineService {
     }
 
 
+    public boolean wasUpdated(String orderLineId) throws ExecutionException, InterruptedException {
+        String orderLineUpdateId = orderLineId+"Updated";
+        DocumentReference docRef = dbFirestore.collection("orderLineUpdates").document(orderLineUpdateId);
+        ApiFuture<DocumentSnapshot> future = docRef.get();
+        DocumentSnapshot document = future.get();
+        return (document!=null);
+    }
+
+
     public List<OrderLine> allOrderLines() throws ExecutionException, InterruptedException {
         CollectionReference collection = dbFirestore.collection("orderLines");
         ApiFuture<QuerySnapshot> querySnapshot = collection.get();
