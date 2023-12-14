@@ -97,6 +97,10 @@ public class DeliveryRoundService {
 
     public String endRound(String documentId) throws ExecutionException, InterruptedException {
         DeliveryRound deliveryRound = this.deliveryRoundById(documentId);
+        for (Delivery d: deliveryRound.getDeliveries()
+             ) {
+            if(!d.isDelivered()) return "Not all deliveries are closed";
+        }
         deliveryRound.setRoundEnded(true);
         deliveryRoundsCollection
                 .document(documentId)

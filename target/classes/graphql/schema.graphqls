@@ -46,6 +46,8 @@ type Mutation {
     createDelivery(orderId: ID!): String
     updateDelivery(orderId: ID): Delivery
     deleteDelivery(documentId: ID!): String
+    closeDelivery(deliveryId:ID!):String
+    resetDelivery(deliveryId:ID!):String
 
     createDeliveryRound(name: String!, driverId: ID): String
     updateDeliveryRound(deliveryRoundId: ID!,name: String, driverId: ID,roundEnded: Boolean): DeliveryRound

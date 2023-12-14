@@ -50,5 +50,15 @@ public class DeliveryController {
         return service.deleteDelivery(deliveryId);
     }
 
+    @MutationMapping
+    public String resetDelivery(@Argument String deliveryId) throws ExecutionException, InterruptedException {
+        service.resetDelivery(deliveryId);
+        return "Succesfully reset delivery";
+    }
+    @MutationMapping
+    public String closeDelivery(@Argument String deliveryId) throws ExecutionException, InterruptedException {
+        service.closeDelivery(deliveryId);
+        return "Succesfully closed delivery";
+    }
 
 }
