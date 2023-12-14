@@ -25,7 +25,7 @@ public class DeliveryRoundController {
     @QueryMapping
     public List<DeliveryRound> allDeliveryRounds()
             throws ExecutionException, InterruptedException {
-        return service.allDeliveryRounds();
+        return service.allDeliveryRoundsBatched();
     }
 
     @QueryMapping

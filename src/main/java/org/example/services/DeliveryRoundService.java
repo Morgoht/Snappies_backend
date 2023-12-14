@@ -1,8 +1,11 @@
 package org.example.services;
 
 import com.google.api.core.ApiFuture;
+import com.google.api.core.ApiFutures;
+import com.google.api.core.SettableApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
+import com.google.firebase.database.annotations.Nullable;
 import org.example.models.Delivery;
 import org.example.models.DeliveryRound;
 import org.example.models.Order;
@@ -17,6 +20,42 @@ public class DeliveryRoundService {
     Firestore dbFirestore = FirestoreClient.getFirestore();
 
      CollectionReference deliveryRoundsCollection = dbFirestore.collection("deliveryRounds");
+
+
+
+    public List<DeliveryRound> allDeliveryRoundsBatched() throws ExecutionException, InterruptedException {
+        CollectionReference collection = deliveryRoundsCollection;
+        int batchSize = 50; // Set your preferred batch size
+        List<DeliveryRound> deliveryRoundList = new ArrayList<>();
+
+        // Start query with initial batch
+        Query query = collection.limit(batchSize);
+
+        while (true) {
+            // Fetch the documents in batches
+            ApiFuture<QuerySnapshot> querySnapshot = query.get();
+
+            for (DocumentSnapshot doc : querySnapshot.get().getDocuments()) {
+                DeliveryRound deliveryRound = setDeliveryRoundFromDocumentSnapshot(doc);
+                if (deliveryRound != null) {
+                    deliveryRoundList.add(deliveryRound);
+                }
+            }
+
+            // If there are fewer documents than the batch size, no more documents to fetch
+            if (querySnapshot.get().size() < batchSize) {
+                break;
+            }
+
+            // Fetch the next batch of documents after the last one in the current batch
+            DocumentSnapshot lastDocument = querySnapshot.get().getDocuments().get(querySnapshot.get().size() - 1);
+            query = collection.startAfter(lastDocument).limit(batchSize);
+        }
+
+        return deliveryRoundList;
+    }
+
+
 
     public DeliveryRound setDeliveryRoundFromDocumentSnapshot(DocumentSnapshot doc) throws ExecutionException, InterruptedException {
         if (doc.exists()) {
@@ -52,6 +91,8 @@ public class DeliveryRoundService {
         return setDeliveryRoundFromDocumentSnapshot(document);
     }
 
+
+
     public List<DeliveryRound> allDeliveryRounds() throws ExecutionException, InterruptedException {
         CollectionReference collection = deliveryRoundsCollection;
         ApiFuture<QuerySnapshot> querySnapshot = collection.get();
@@ -63,6 +104,7 @@ public class DeliveryRoundService {
 
         return deliveryRoundList;
     }
+
 
     public String createDeliveryRound(DeliveryRound deliveryRound, String driverId) throws ExecutionException, InterruptedException {
         DocumentReference docRef = deliveryRoundsCollection.document(deliveryRound.getDocumentId());
