@@ -27,7 +27,7 @@ jobs:
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
         with:
-          name: Snappies_backend
+          name: Snappies_backend_prod
           path: '${{ github.workspace }}/target/*.jar'
 
   deploy:
@@ -41,7 +41,7 @@ jobs:
       - name: Download artifact from build job
         uses: actions/download-artifact@v3
         with:
-          name: Snappies_backend
+          name: Snappies_backend_prod
 
       - name: Deploy Snappies backend app to Azure Web App
         id: deploy-to-webapp
@@ -49,5 +49,5 @@ jobs:
         with:
           app-name: 'snappiesbackend'
           slot-name: 'production'
-          publish-profile: '${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_8B601C30492E41438EB5E4634BA201F5 }}'
+          publish-profile: '${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_PROD }}'
           package: '*.jar'
