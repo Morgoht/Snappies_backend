@@ -181,6 +181,7 @@ public class OrderService {
         for (OrderLine ol: order.getOrderLines()
              ) {
             new OrderLineService().resetOrderLine(ol.getDocumentId());
+
         }
     }
 }

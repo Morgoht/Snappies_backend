@@ -42,6 +42,7 @@ type Mutation {
     createOrderLine(articleId: ID!, quantity: Float!): String
     updateOrderLine(orderLineId: ID!, quantity: Float!): OrderLine
     deleteOrderLine(orderLineId: ID!): String
+    permanentUpdateOrderLine(orderLineId: ID!, quantity: Float!): OrderLine
 
     createDelivery(orderId: ID!): String
     updateDelivery(orderId: ID): Delivery
