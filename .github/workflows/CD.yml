@@ -35,7 +35,7 @@ jobs:
     needs: build
     environment:
       name: 'dev'
-      url: '${{ steps.deploy-to-webapp.outputs.webapp-url }}'
+      url: 'https://snappiesbackend.azurewebsites.ne'
 
     steps:
       - name: Download artifact from build job
