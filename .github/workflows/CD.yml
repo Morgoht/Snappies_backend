@@ -34,8 +34,8 @@ jobs:
     runs-on: windows-latest
     needs: build
     environment:
-      name: 'production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+      name: 'dev'
+      url: '${{ steps.deploy-to-webapp.outputs.webapp-url }}'
 
     steps:
       - name: Download artifact from build job
@@ -48,6 +48,6 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'snappiesbackend'
-          slot-name: 'production'
+          slot-name: 'dev'
           publish-profile: ${{ secrets.AzureAppService_PublishProfile_1234 }}
           package: '*.jar'
