@@ -116,13 +116,13 @@ public class DeliveryRoundService {
     public DeliveryRound updateDeliveryRound(String deliveryRoundId, String name, String driverId) throws ExecutionException, InterruptedException {
         DocumentReference docRef = deliveryRoundsCollection.document(deliveryRoundId);
         DeliveryRound deliveryRound = this.deliveryRoundById(deliveryRoundId);
-        deliveryRound.setName(name);
-        deliveryRound.setDriver(new UserService().userById(driverId));
-        DocumentReference userReference =  dbFirestore.collection("users").document(driverId);
         if(name!=null) {
+            deliveryRound.setName(name);
             docRef.update("name", name);
         }
         if(driverId!=null) {
+            deliveryRound.setDriver(new UserService().userById(driverId));
+            DocumentReference userReference =  dbFirestore.collection("users").document(driverId);
             docRef.update("driver", userReference);
         }
         return deliveryRound;

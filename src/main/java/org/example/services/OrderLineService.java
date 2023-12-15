@@ -60,7 +60,7 @@ public class OrderLineService {
         DocumentReference docRef = dbFirestore.collection("orderLineUpdates").document(orderLineUpdateId);
         ApiFuture<DocumentSnapshot> future = docRef.get();
         DocumentSnapshot document = future.get();
-        return (document!=null);
+        return (document.exists());
     }
 
 
