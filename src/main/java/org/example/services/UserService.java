@@ -101,7 +101,7 @@ public class UserService {
     }
 
     public String deleteUser(String documentId){
-        usersCollection.document(documentId).delete();
+        ApiFuture<WriteResult> writeResultApiFuture =  usersCollection.document(documentId).delete();
         return "Successfully deleted user";
     }
 }

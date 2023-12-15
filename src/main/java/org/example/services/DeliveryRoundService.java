@@ -129,7 +129,7 @@ public class DeliveryRoundService {
     }
 
     public String deleteDeliveryRound(String documentId) {
-        deliveryRoundsCollection.document(documentId).delete();
+        ApiFuture<WriteResult> writeResultApiFuture = deliveryRoundsCollection.document(documentId).delete();
         return "Successfully deleted delivery round";
     }
 
